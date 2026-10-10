@@ -6,11 +6,20 @@ from pathlib import Path
 
 import pandas as pd
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RAW_DATA_DIR = REPO_ROOT / "data" / "1_raw"
 OUTPUT_DIR = REPO_ROOT / "data" / "2_translated"
 ENTITY_COUNT_DIR = OUTPUT_DIR / "entity count"
+
+# Remove strengths such as 20 MG, 5 MG/ML, 10%, and 1:100000.
+STRENGTH_PATTERN = re.compile(
+    r"\b\d+(?:[.,]\d+)?\s*"
+    r"(?:MCG|UG|MG|KG|G|ML|L|IU|UNITS?|MEQ)\b"
+    r"(?:\s*/\s*(?:\d+(?:[.,]\d+)?\s*)?"
+    r"(?:MCG|UG|MG|KG|G|ML|L|IU|UNITS?|MEQ)\b)?"
+    r"|\b\d+(?:[.,]\d+)?\s*%"
+    r"|\b\d+\s*:\s*\d+\b"
+)
 
 
 def normalize(value, substance_list=False):
@@ -24,6 +33,7 @@ def normalize(value, substance_list=False):
     for item in items:
         text = unicodedata.normalize("NFKD", item)
         text = text.encode("ascii", "ignore").decode("ascii").upper()
+        text = STRENGTH_PATTERN.sub(" ", text)
         text = re.sub(r"[^A-Z0-9]+", " ", text)
         text = " ".join(text.split())
         if text:
@@ -126,8 +136,8 @@ def main():
     lines = [
         "ENTITY COUNT REPORT",
         "Entity key: normalized brand name + sorted normalized active substances",
-        "Normalization: uppercase, remove accents, standardize punctuation and whitespace",
-        "Strengths and salt descriptions are kept",
+        "Normalization: uppercase, remove accents and dosage strengths, standardize punctuation and whitespace",
+        "Salt descriptions are kept",
         "",
         "BASIC ROW COUNTS",
         f"Drugs@FDA: {len(fda):,}",

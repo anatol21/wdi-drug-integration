@@ -82,11 +82,11 @@ regulatory dates and generic, biosimilar or orphan flags.
 \hline
 \textbf{Dataset} & \textbf{Source (*)} & \textbf{Format} & \textbf{\# Rows} & \textbf{\# Entities} & \textbf{\# Attr.} & \textbf{List of attributes (**)} \\
 \hline
-Drugs@FDA & U.S. FDA & TXT/TSV & 51,839 & 8,523 & 56 & ApplNo, ProductNo, Form, Strength, ReferenceDrug, DrugName, ActiveIngredient, \miss{ApplPublic\allowbreak Notes}, SponsorName, SubmissionType, SubmissionStatus, \miss{SubmissionsPublic\allowbreak Notes}, \miss{Review\allowbreak Priority}, MarketingStatusID, TECode, \dots \\
+Drugs@FDA & U.S. FDA & TXT/TSV & 51,839 & 8,175 & 56 & ApplNo, ProductNo, Form, Strength, ReferenceDrug, DrugName, ActiveIngredient, \miss{ApplPublic\allowbreak Notes}, SponsorName, SubmissionType, SubmissionStatus, \miss{SubmissionsPublic\allowbreak Notes}, \miss{Review\allowbreak Priority}, MarketingStatusID, TECode, \dots \\
 \hline
 EMA Medicines & EMA & XLSX/CSV & 2,746 & 2,620 & 39 & Name of medicine, EMA product number, Medicine status, \miss{Opinion status}, Active substance, \miss{Species (vet.)}, ATC code, Biosimilar, Generic, Orphan medicine, \miss{Opinion adopted date}, \miss{Revision number}, \dots \\
 \hline
-DPD & Health Canada & TXT/CSV & 42,042 & 42,040 & 87 & DIN, brand name, ingredient, strength, \miss{dosage unit}, company name, class, ATC code, schedule, status, status date, form, route, \miss{descriptor}, \dots \\
+DPD & Health Canada & TXT/CSV & 42,042 & 41,636 & 87 & DIN, brand name, ingredient, strength, \miss{dosage unit}, company name, class, ATC code, schedule, status, status date, form, route, \miss{descriptor}, \dots \\
 \hline
 \end{tabularx}
 \smallskip
@@ -103,7 +103,7 @@ Table~\ref{tab:datasets} summarises the datasets and their most relevant attribu
 % ------------------------------------------------------------
 \subsubsection*{Drugs@FDA}
 % ------------------------------------------------------------
-Drugs@FDA contains 51,839 product rows across 29,377 applications, forming 8,523 normalized medicine entities. Among applications, 78.3\% are ANDAs, 20.1\% NDAs, and 1.7\% BLAs. Three attributes exceed 30\% missingness: \texttt{ApplPublicNotes} (99.99\%), \texttt{SubmissionsPublicNotes} (99.83\%), and \texttt{ReviewPriority} (41.73\%).
+Drugs@FDA contains 51,839 product rows across 29,377 applications, forming 8,175 normalized medicine entities. Among applications, 78.3\% are ANDAs, 20.1\% NDAs, and 1.7\% BLAs. Three attributes exceed 30\% missingness: \texttt{ApplPublicNotes} (99.99\%), \texttt{SubmissionsPublicNotes} (99.83\%), and \texttt{ReviewPriority} (41.73\%).
 
 % ------------------------------------------------------------
 \subsubsection*{EMA Medicines}
@@ -113,7 +113,7 @@ EMA Medicines contains 2,746 medicine rows, forming 2,620 normalized medicine en
 % ------------------------------------------------------------
 \subsubsection*{Health Canada Drug Product Database (DPD)}
 % ------------------------------------------------------------
-The Health Canada DPD contains 58,137 product records across 12 tables linked by \texttt{DRUG\_CODE}. They are consolidated into 42,042 medicine rows, forming 42,040 normalized medicine entities. Human products account for 87.7\% of the records. By status, 66.5\% are cancelled and 23.0\% marketed. Notable missingness includes ATC code (21.47\%) and first marketed date (11.67\%).
+The Health Canada DPD contains 58,137 product records across 12 tables linked by \texttt{DRUG\_CODE}. They are consolidated into 42,042 medicine rows, forming 41,636 normalized medicine entities. Human products account for 87.7\% of the records. By status, 66.5\% are cancelled and 23.0\% marketed. Notable missingness includes ATC code (21.47\%) and first marketed date (11.67\%).
 
 \subsection{Integrated schema and overlap with input schemata}
 
@@ -150,16 +150,21 @@ value--unit pairs.
 \end{tabular}
 \end{table}
 
-For exact counting, \texttt{medicine\_id} combines the normalized \texttt{brandName} with
-the sorted \texttt{activeSubstances} list. Text is converted to upper case, accents are
-removed, punctuation and whitespace are standardized, and multiple substances are
-deduplicated and sorted.
+For consistent counting across the three sources, \texttt{medicine\_id} combines the
+normalized \texttt{brandName} with the normalized \texttt{activeSubstances} list. Text is
+converted to upper case, accents and dosage-strength expressions are removed, and
+punctuation and whitespace are standardized. Multiple active substances are deduplicated
+and sorted before the identifier is formed.
 
 % ============================================================
 \subsection{Entity Count Requirement}
 % ============================================================
 
-Table~\ref{tab:datasets} shows that the entity-count requirement is satisfied. Let $F$, $E$ and $D$ denote the normalized medicine identifiers in Drugs@FDA, EMA Medicines and the DPD. The pairwise overlaps are 428, 914 and 587, and their deduplicated union contains $\left|(F \cap E) \cup (F \cap D) \cup (E \cap D)\right| = 1{,}369$.
-This exceeds the required minimum of 1,000. Entity resolution may identify additional overlap among records that differ only in dosage strength or other source-specific representations.
+Table~\ref{tab:datasets} shows that the entity-count requirement is satisfied. Let $F$, $E$
+and $D$ denote the \texttt{medicine\_id} values in Drugs@FDA, EMA Medicines and the DPD.
+The pairwise overlaps are $|F \cap E| = 428$, $|F \cap D| = 949$ and
+$|E \cap D| = 594$. Their deduplicated union contains
+$\left|(F \cap E) \cup (F \cap D) \cup (E \cap D)\right| = 1{,}407$ distinct medicines,
+exceeding the required minimum of 1,000.
 
 \end{document}
