@@ -1,0 +1,27 @@
+ENTITY COUNT REPORT
+Entity key: normalized brand name + sorted normalized active substances
+Normalization: uppercase, remove accents, standardize punctuation and whitespace
+Strengths and salt descriptions are kept
+
+BASIC ROW COUNTS
+Drugs@FDA: 51,839
+EMA Medicines: 2,746
+Health Canada DPD medicines: 42,042
+
+NORMALIZED ENTITY COUNTS
+Drugs@FDA: 8,523
+EMA Medicines: 2,620
+Health Canada DPD: 42,040
+
+PAIRWISE OVERLAP COUNTS
+Drugs@FDA and EMA Medicines: 428
+Drugs@FDA and Health Canada DPD: 914
+EMA Medicines and Health Canada DPD: 587
+
+UNIQUE MEDICINES FOUND IN AT LEAST TWO DATASETS
+Total: 1,369
+
+NORMALIZED ENTITY CSV FILES
+data\2_translated\entity count\fda_normalized_entities.csv
+data\2_translated\entity count\ema_normalized_entities.csv
+data\2_translated\entity count\dpd_normalized_entities.csv
