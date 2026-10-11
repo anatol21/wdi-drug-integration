@@ -137,7 +137,6 @@ def main():
         "ENTITY COUNT REPORT",
         "Entity key: normalized brand name + sorted normalized active substances",
         "Normalization: uppercase, remove accents and dosage strengths, standardize punctuation and whitespace",
-        "Salt descriptions are kept",
         "",
         "BASIC ROW COUNTS",
         f"Drugs@FDA: {len(fda):,}",
