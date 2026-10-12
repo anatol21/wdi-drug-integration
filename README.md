@@ -1,44 +1,45 @@
 # Web Data Integration: Pharmaceutical Drug Data
 
-This repository contains the codebase and documentation for our Web Data Integration (WDI) student project. We are building an integrated dataset of pharmaceutical drugs, focusing on **active substances** (e.g., atorvastatin, paracetamol) by combining data from US regulators, EU regulators, and public knowledge graphs.
+This repository contains the codebase, data pipeline, and documentation for our Web Data Integration (WDI) student project at the University of Mannheim. We are building an integrated dataset of approved pharmaceutical drugs across the **United States, the European Union, and Canada**, modelling a **medicine** (`brandName` + `activeSubstances`) as the central entity.
 
 ## Datasets
-1. **Drugs@FDA:** US approved drugs (CSV)
-2. **EMA Medicines:** EU approved drugs (Excel)
-3. **Health Canada DPD:** Canadian Drug Product Database (CSV extract, 12 related tables)
+1. **Drugs@FDA (`01_us_drugs_at_fda`):** Official U.S. FDA database of approved drug products (`TXT/TSV` relational tables joined on `ApplNo` and `ProductNo`).
+2. **EMA Medicines (`02_eu_ema_medicines`):** European Medicines Agency register of EU-authorised medicines (`XLSX/CSV`).
+3. **Health Canada DPD (`03_ca_health_canada_dpd`):** Canadian Drug Product Database covering marketed, inactive, approved, and dormant drug products (`TXT/CSV`, 12 relational tables linked via `DRUG_CODE`).
 
 ## Project Phases
-* **Phase I: Data Selection and Translation:** Profiling raw data, handling missing values, and mapping all three sources to a single integrated JSON/XML schema.
-* **Phase II: Identity Resolution:** Identifying overlapping active substances across the datasets using similarity measures and blocking techniques via the PyDI framework.
-* **Phase III: Data Fusion:** Merging records and resolving data conflicts (e.g., paracetamol vs. acetaminophen) to create a single, clean golden record for each entity.
+* **Phase I: Data Selection and Translation:** Profiling raw data, pre-joining relational tables, handling missing values, and mapping all three sources to a single integrated target schema (`XML`/`JSON`) using Altova MapForce.
+* **Phase II: Identity Resolution:** Identifying overlapping medicines across the three jurisdictions using blocking and similarity measures over `brandName` and `activeSubstances` via the PyDI framework (handling USAN vs. INN nomenclature, biologic suffixes, and salt forms).
+* **Phase III: Data Fusion:** Merging matched records and resolving data conflicts across sources to produce a single, consolidated golden record per medicine.
 
 ## Local Setup
-Ensure you have Python installed, then install the necessary dependencies for data profiling and extraction:
-`bash
+Ensure you have Python installed, then install the necessary dependencies for data profiling and integration:
+```bash
 pip install -r requirements.txt
-`
-
-## Team & Work Split (Phase I)
-* **Gabriel:** Requirements compliance, math checks, and final PDF assembly.
-* **Özlem:** Use case narrative and entity overlap justification.
-* **Anatole & Hai:** Data extraction and profiling (FDA, EMA, Wikidata).
-* **Trang:** Target schema design and attribute intersection mapping.
+```
 
 ## Repository Structure
 ```text
 wdi-drug-integration/
 ├── data/
-│   ├── 1_raw/                 # Original CSV/Excel from FDA, EMA, and Wikidata
-│   ├── 2_translated/          # JSON/XML files mapped to the integrated schema
-│   └── 3_fused/               # Final output after PyDI identity resolution & fusion
+│   ├── 1_raw/                               # Original raw files from official regulators
+│   │   ├── 01_us_drugs_at_fda/              # Core FDA tables (Products, Applications, Submissions, MarketingStatus)
+│   │   ├── 02_eu_ema_medicines/             # EMA medicines register (ema_medicines.csv)
+│   │   ├── 03_ca_health_canada_dpd/         # DPD tables split by status (marketed, inactive, approved, dormant)
+│   │   └── _archives/                       # Compressed backups and deprecated v1 datasets
+│   ├── 2_processed/                         # Pre-joined single-table CSVs (e.g., dpd_medicines.csv) ready for MapForce
+│   ├── 3_profiling/                         # Overlap estimation (entity_count) & LLM-cleaned ingredient lists
+│   ├── 4_translated_mapforce/               # Phase I outputs: XML/JSON files mapped to the integrated schema
+│   └── 5_fused/                             # Phase III outputs: Final fused dataset after PyDI resolution & fusion
 ├── src/
-│   ├── data_collection/       # Python scripts for Wikidata SPARQL queries
-│   ├── mapforce/              # MapForce mapping files (.mfd)
-│   ├── identity_resolution/   # PyDI scripts for blocking and similarity measures
-│   └── data_fusion/           # PyDI scripts for conflict resolution
+│   ├── data_collection/                     # Python scripts for dataset consolidation, profiling, and overlap checks
+│   ├── mapforce/                            # Altova MapForce mapping files (.mfd) and target schema (.xsd/.json)
+│   ├── identity_resolution/                 # PyDI scripts for blocking and similarity measures
+│   └── data_fusion/                         # PyDI scripts for conflict resolution and evaluation
 ├── docs/
-│   ├── outline/              # The 4-page project abstract (PDF)
-│   └── final_report/          # Springer CS LaTeX files and final 12-page report
-├── .gitignore                 # Excludes large raw datasets
-├── requirements.txt           # Python dependencies
-└── README.md                  # Project overview
+│   ├── outline/                             # The 4-page project outline (LaTeX & PDF)
+│   └── final_report/                        # Springer CS LaTeX files and final 12-page report
+├── .gitignore                               # Excludes large raw data files while keeping .gitkeep folder structure
+├── requirements.txt                         # Python dependencies
+└── README.md                                # Project overview
+```
