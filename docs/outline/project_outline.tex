@@ -2,7 +2,6 @@
 \documentclass[a4paper,oneside]{scrbook}
 
 % some useful packages
-\usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{latexsym}
 \usepackage{amsmath}
@@ -47,7 +46,7 @@
 } \date{October 12, 2026}
 \publishers{{\small Submitted to}\\
   Data and Web Science Group\\
-  Dr. Ralph Peters\\
+  Dr. Ralph Peeters\\
   Prof. Dr. Christian Bizer\\
   University of Mannheim\\}
 \maketitle
@@ -64,8 +63,8 @@ the European Medicines Agency's register of EU-authorised medicines. The Health
 Canada Drug Product Database (DPD) contains current and historical drug products from
 Health Canada. The central entity is a medicine, represented by its brand name and active
 substance or combination of active substances. Each integrated record includes the licence
-holder, regulatory status, product class, ATC code, dosage form, route, strengths, regional
-regulatory dates and generic, biosimilar or orphan flags.
+holder, regulatory status, product class, ATC code, dosage form, route, strengths, active
+substance count, regional regulatory dates and generic, biosimilar or orphan flags.
 
 % ============================================================
 \section{Requirements Suitability}
@@ -78,23 +77,24 @@ regulatory dates and generic, biosimilar or orphan flags.
 \caption{Overview of the input datasets}
 \label{tab:datasets}
 \scriptsize
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.15}
 \begin{tabularx}{\textwidth}{|l|l|l|r|r|r|>{\raggedright\arraybackslash}X|}
 \hline
-\textbf{Dataset} & \textbf{Source (*)} & \textbf{Format} & \textbf{\# Rows} & \textbf{\# Entities} & \textbf{\# Attr.} & \textbf{List of attributes (**)} \\
+\textbf{Dataset} & \textbf{Source\textsuperscript{*}} & \textbf{Format} & \textbf{Rows} & \textbf{Entities} & \textbf{Attr.} & \textbf{List of attributes\textsuperscript{**}} \\
 \hline
-Drugs@FDA & U.S. FDA & TXT/TSV & 51,839 & 8,175 & 56 & ApplNo, ProductNo, Form, Strength, ReferenceDrug, DrugName, ActiveIngredient, \miss{ApplPublic\allowbreak Notes}, SponsorName, SubmissionType, SubmissionStatus, \miss{SubmissionsPublic\allowbreak Notes}, \miss{Review\allowbreak Priority}, MarketingStatusID, TECode, \dots \\
+Drugs@FDA & U.S. FDA & TXT/TSV & 51,839 & 8,175 & 56 & ApplNo, ProductNo, Form, Strength, ReferenceDrug, DrugName, ActiveIngredient, \miss{ApplPublicNotes}, SponsorName, SubmissionType, SubmissionStatus, \miss{SubmissionsPublicNotes}, \miss{ReviewPriority}, MarketingStatusID, TECode, \dots \\
 \hline
-EMA Medicines & EMA & XLSX/CSV & 2,746 & 2,620 & 39 & Name of medicine, EMA product number, Medicine status, \miss{Opinion status}, Active substance, \miss{Species (vet.)}, ATC code, Biosimilar, Generic, Orphan medicine, \miss{Opinion adopted date}, \miss{Revision number}, \dots \\
+EMA Med. & EMA & XLSX/CSV & 2,746 & 2,620 & 39 & Name of medicine, EMA product number, Medicine status, \miss{Opinion status}, Active substance, \miss{Species (vet.)}, ATC code, Biosimilar, Generic, Orphan medicine, \miss{Opinion adopted date}, \miss{Revision number}, \dots \\
 \hline
-DPD & Health Canada & TXT/CSV & 42,042 & 41,636 & 87 & DIN, brand name, ingredient, strength, \miss{dosage unit}, company name, class, ATC code, schedule, status, status date, form, route, \miss{descriptor}, \dots \\
+DPD & Health Can. & TXT/CSV & 42,042 & 41,636 & 87 & DIN, brand name, ingredient, number of AIs, strength, \miss{dosage unit}, company name, class, ATC code, schedule, status, status date, form, route, \miss{descriptor}, \dots \\
 \hline
 \end{tabularx}
-\smallskip
+\vspace{2pt}
 \raggedright
 {\scriptsize
-\textbf{(*) Source:} Downloaded directly from the respective official provider websites. \\
-\textbf{Entities:} Distinct normalized brand-name and active-substance combinations. \\
-\textbf{(**) Missingness:} \textsuperscript{\textcolor{Missing}{**}} indicates $>$30\% missing values. High missingness is mostly structural (e.g., optional notes, category-specific fields, or particular regulatory events).
+\textbf{\textsuperscript{*}Source:} Downloaded directly from official provider websites. \textbf{Entities:} Distinct normalized brand-name and active-substance pairs. \\
+\textbf{\textsuperscript{**}Missingness:} \textsuperscript{\textcolor{Missing}{**}} indicates $>$30\% missing values (mostly structural, such as optional notes, veterinary fields, or specific regulatory events).
 }
 \end{table}
 
@@ -117,12 +117,12 @@ The Health Canada DPD contains 58,137 product records across 12 tables linked by
 
 \subsection{Integrated schema and overlap with input schemata}
 
-The integrated schema contains 15 attributes (Table~\ref{tab:schema}); ten occur in at
+The integrated schema contains 16 attributes (Table~\ref{tab:schema}); eleven occur in at
 least two sources. \texttt{activeSubstances} and \texttt{strengths} are list-valued, while
-the remaining attributes are single-valued. Strengths are represented as numeric
-value--unit pairs.
+the remaining 14 attributes are single-valued (including the numeric attribute
+\texttt{activeSubstanceCount}). Strengths are represented as numeric value--unit pairs.
 
-\begin{table}[H]
+\begin{table}[htbp]
 \centering
 \caption{Attribute Intersection with Integrated Schema}
 \label{tab:schema}
@@ -133,6 +133,7 @@ value--unit pairs.
 \hline
 \texttt{brandName} & string & Drugs@FDA, EMA Medicines, DPD \\
 \texttt{activeSubstances} & list (string) & Drugs@FDA, EMA Medicines, DPD \\
+\texttt{activeSubstanceCount} & numeric (integer) & Drugs@FDA (derived), EMA Medicines (derived), DPD \\
 \texttt{licenceHolder} & string & Drugs@FDA, EMA Medicines, DPD \\
 \texttt{regulatoryStatus} & string (categorical) & Drugs@FDA, EMA Medicines, DPD \\
 \texttt{productClass} & string (categorical) & Drugs@FDA (derived), EMA Medicines, DPD \\
@@ -150,21 +151,58 @@ value--unit pairs.
 \end{tabular}
 \end{table}
 
-For consistent counting across the three sources, \texttt{medicine\_id} combines the
-normalized \texttt{brandName} with the normalized \texttt{activeSubstances} list. Text is
-converted to upper case, accents and dosage-strength expressions are removed, and
-punctuation and whitespace are standardized. Multiple active substances are deduplicated
-and sorted before the identifier is formed.
-
 % ============================================================
-\subsection{Entity Count Requirement}
+\subsection{Entity Identification and Count Requirement}
 % ============================================================
 
-Table~\ref{tab:datasets} shows that the entity-count requirement is satisfied. Let $F$, $E$
-and $D$ denote the \texttt{medicine\_id} values in Drugs@FDA, EMA Medicines and the DPD.
-The pairwise overlaps are $|F \cap E| = 428$, $|F \cap D| = 949$ and
-$|E \cap D| = 594$. Their deduplicated union contains
-$\left|(F \cap E) \cup (F \cap D) \cup (E \cap D)\right| = 1{,}407$ distinct medicines,
-exceeding the required minimum of 1,000.
+A medicine is identified by its \texttt{brandName} and \texttt{activeSubstances}. Contrary
+to initial assumptions, \texttt{licenceHolder} cannot be used as an identifying attribute
+because the same medicine is frequently marketed by different regional subsidiaries or
+unrelated licensing partners across jurisdictions (for example, \textit{Verkazia} is held
+by \texttt{HARROW EYE} in the US, \texttt{Santen Oy} in the EU, and \texttt{APOTEX INC} in
+Canada).
+
+To estimate how many medicines appear in multiple datasets based on exact matching, we build
+a normalized key (\texttt{medicine\_id}) from \texttt{brandName} and \texttt{activeSubstances}
+by converting text to upper case, removing accents and dosage strengths, standardizing
+punctuation, and sorting multiple active substances. Let $F$, $E$ and $D$ denote the sets of
+\texttt{medicine\_id} values in Drugs@FDA, EMA Medicines and the DPD. The pairwise exact
+overlaps are $|F \cap E| = 428$, $|F \cap D| = 949$ and $|E \cap D| = 594$, yielding a
+deduplicated union of $\left|(F \cap E) \cup (F \cap D) \cup (E \cap D)\right| = 1{,}407$
+distinct medicines -- well above the required minimum of 1,000.
+
+However, exact matching misses many identical medicines because both identifying attributes
+can vary across countries (Table~\ref{tab:difficult_match}):
+\begin{itemize}
+  \item \textbf{Active substance naming and salt forms:} The same substance can have different
+  regional spellings (e.g., \texttt{CYCLOSPORINE} in the US and Canada vs.\
+  \texttt{ciclosporin} in the EU for \textit{Verkazia}) or different chemical and salt
+  representations (e.g., \texttt{GLYCOPYRROLATE} in the US, \texttt{glycopyrronium bromide}
+  in the EU, and \texttt{GLYCOPYRRONIUM (GLYCOPYRRONIUM BROMIDE)} in Canada for
+  \textit{Seebri}).
+  \item \textbf{Brand name suffixes:} The same medicine may carry different device or
+  formulation suffixes across markets, such as \texttt{SEEBRI NEOHALER} in Drugs@FDA versus
+  \texttt{Seebri Breezhaler} in EMA Medicines and the DPD.
+\end{itemize}
+
+\begin{table}[htbp]
+\centering
+\caption{Examples of identical medicines with differing identifying attributes across sources}
+\label{tab:difficult_match}
+\footnotesize
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\textbf{Dataset} & \textbf{Brand Name} & \textbf{Active Substance} \\
+\hline
+Drugs@FDA & \texttt{VERKAZIA} & \texttt{CYCLOSPORINE} \\
+EMA Medicines & \texttt{Verkazia} & \texttt{ciclosporin} \\
+Health Canada DPD & \texttt{VERKAZIA} & \texttt{CYCLOSPORINE} \\
+\hline
+Drugs@FDA & \texttt{SEEBRI NEOHALER} & \texttt{GLYCOPYRROLATE} \\
+EMA Medicines & \texttt{Seebri Breezhaler} & \texttt{glycopyrronium bromide} \\
+Health Canada DPD & \texttt{SEEBRI BREEZHALER} & \texttt{GLYCOPYRRONIUM (GLYCOPYRRONIUM BROMIDE)} \\
+\hline
+\end{tabularx}
+\end{table}
 
 \end{document}
