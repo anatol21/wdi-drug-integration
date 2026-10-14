@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Altova MapForce Mapping & UDF Library File (wdi_helpers.mfd)
+  WDI Drug Integration Project - University of Mannheim
+  
+  Contains User-Defined Functions (UDFs) to:
+    1. split strengths into (numeric value, unit)
+    2. standardize regulatoryStatus, productClass, dosageForm, and route
+    3. parse FDA composite Form field (Form vs Route)
+-->
+<mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="22">
+	<resources/>
+	<component name="cleanText" library="user" uid="1000" kind="5">
+		<properties>
+			<language id="builtin"/>
+		</properties>
+		<sources>
+			<datapoint pos="0" key="1"/>
+		</sources>
+		<targets>
+			<datapoint pos="0" key="2"/>
+		</targets>
+		<description>
+			<p>Standardizes text by trimming whitespace and converting to uppercase.</p>
+		</description>
+	</component>
+
+	<component name="strengthValue" library="user" uid="1010" kind="5">
+		<properties>
+			<language id="builtin"/>
+		</properties>
+		<sources>
+			<datapoint pos="0" key="11"/>
+		</sources>
+		<targets>
+			<datapoint pos="0" key="12"/>
+		</targets>
+		<description>
+			<p>Extracts numeric strength value and normalizes concentration per denominator unit (e.g. 25MG/5ML -> 5).</p>
+		</description>
+	</component>
+
+	<component name="strengthUnit" library="user" uid="1020" kind="5">
+		<properties>
+			<language id="builtin"/>
+		</properties>
+		<sources>
+			<datapoint pos="0" key="21"/>
+		</sources>
+		<targets>
+			<datapoint pos="0" key="22"/>
+		</targets>
+		<description>
+			<p>Extracts and standardizes strength unit using strength_unit.xml (e.g. 25MG/5ML -> mg/mL).</p>
+		</description>
+	</component>
+
+	<component name="stdRegulatoryStatus" library="user" uid="1030" kind="5">
+		<properties>
+			<language id="builtin"/>
+		</properties>
+		<sources>
+			<datapoint pos="0" key="31"/>
+		</sources>
+		<targets>
+			<datapoint pos="0" key="32"/>
+		</targets>
+		<description>
+			<p>Maps raw regulatory status to harmonized status (Authorised, Suspended, Pending, Withdrawn, Application withdrawn, Refused).</p>
+		</description>
+	</component>
+
+	<component name="bestRegulatoryStatus" library="user" uid="1040" kind="5">
+		<properties>
+			<language id="builtin"/>
+		</properties>
+		<sources>
+			<datapoint pos="0" key="41"/>
+		</sources>
+		<targets>
+			<datapoint pos="0" key="42"/>
+		</targets>
+		<description>
+			<p>Picks the most active/favourable status among a semicolon-separated list of statuses.</p>
+		</description>
+	</component>
+
+	<component name="stdProductClass" library="user" uid="1050" kind="5">
+		<properties>
+			<language id="builtin"/>
+		</properties>
+		<sources>
+			<datapoint pos="0" key="51"/>
+		</sources>
+		<targets>
+			<datapoint pos="0" key="52"/>
+		</targets>
+		<description>
+			<p>Standardizes product class to Human, Veterinary, or Disinfectant (also derives Human from FDA ApplType).</p>
+		</description>
+	</component>
+
+	<component name="stdDosageForm" library="user" uid="1060" kind="5">
+		<properties>
+			<language id="builtin"/>
+		</properties>
+		<sources>
+			<datapoint pos="0" key="61"/>
+		</sources>
+		<targets>
+			<datapoint pos="0" key="62"/>
+		</targets>
+		<description>
+			<p>Maps a single raw dosage form to the controlled target dosage form using dosage_form.xml.</p>
+		</description>
+	</component>
+
+	<component name="dosageFormList" library="user" uid="1070" kind="5">
+		<properties>
+			<language id="builtin"/>
+		</properties>
+		<sources>
+			<datapoint pos="0" key="71"/>
+		</sources>
+		<targets>
+			<datapoint pos="0" key="72"/>
+		</targets>
+		<description>
+			<p>Maps a semicolon-separated list of dosage forms, deduplicating and sorting the resulting names.</p>
+		</description>
+	</component>
+
+	<component name="stdRoute" library="user" uid="1080" kind="5">
+		<properties>
+			<language id="builtin"/>
+		</properties>
+		<sources>
+			<datapoint pos="0" key="81"/>
+		</sources>
+		<targets>
+			<datapoint pos="0" key="82"/>
+		</targets>
+		<description>
+			<p>Maps a single raw route of administration to standard title case using route.xml.</p>
+		</description>
+	</component>
+
+	<component name="routeList" library="user" uid="1090" kind="5">
+		<properties>
+			<language id="builtin"/>
+		</properties>
+		<sources>
+			<datapoint pos="0" key="91"/>
+		</sources>
+		<targets>
+			<datapoint pos="0" key="92"/>
+		</targets>
+		<description>
+			<p>Maps a semicolon-separated list of routes, deduplicating and sorting the resulting names.</p>
+		</description>
+	</component>
+
+	<component name="fdaFormPart" library="user" uid="1100" kind="5">
+		<properties>
+			<language id="builtin"/>
+		</properties>
+		<sources>
+			<datapoint pos="0" key="101"/>
+		</sources>
+		<targets>
+			<datapoint pos="0" key="102"/>
+		</targets>
+		<description>
+			<p>Extracts dosage form from FDA composite Form column (substring before semicolon).</p>
+		</description>
+	</component>
+
+	<component name="fdaRoutePart" library="user" uid="1110" kind="5">
+		<properties>
+			<language id="builtin"/>
+		</properties>
+		<sources>
+			<datapoint pos="0" key="111"/>
+		</sources>
+		<targets>
+			<datapoint pos="0" key="112"/>
+		</targets>
+		<description>
+			<p>Extracts route of administration from FDA composite Form column (substring after semicolon).</p>
+		</description>
+	</component>
+</mapping>

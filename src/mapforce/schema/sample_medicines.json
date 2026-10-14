@@ -1,0 +1,92 @@
+{
+  "medicines": [
+    {
+      "id": "FDA_VERKAZIA|CYCLOSPORINE",
+      "source": "FDA",
+      "brandName": "VERKAZIA",
+      "activeSubstances": [
+        "CYCLOSPORINE"
+      ],
+      "activeSubstanceCount": 1,
+      "licenceHolder": "HARROW EYE",
+      "regulatoryStatus": "Authorised",
+      "productClass": "Human",
+      "generic": false,
+      "dosageForm": "Emulsion",
+      "route": "Ophthalmic",
+      "strengths": [
+        {
+          "value": 0.1,
+          "unit": "%"
+        }
+      ],
+      "usApprovalDate": "2021-06-23"
+    },
+    {
+      "id": "EMA_VERKAZIA|CICLOSPORIN",
+      "source": "EMA",
+      "brandName": "Verkazia",
+      "activeSubstances": [
+        "ciclosporin"
+      ],
+      "activeSubstanceCount": 1,
+      "licenceHolder": "Santen Oy",
+      "regulatoryStatus": "Authorised",
+      "productClass": "Human",
+      "atcCode": "S01XA18",
+      "generic": false,
+      "biosimilar": false,
+      "orphanMedicine": false,
+      "euAuthorisationDate": "2018-07-06"
+    },
+    {
+      "id": "DPD_SEEBRI BREEZHALER|GLYCOPYRRONIUM",
+      "source": "DPD",
+      "brandName": "SEEBRI BREEZHALER",
+      "activeSubstances": [
+        "GLYCOPYRRONIUM (GLYCOPYRRONIUM BROMIDE)"
+      ],
+      "activeSubstanceCount": 1,
+      "licenceHolder": "NOVARTIS PHARMACEUTICALS CANADA INC",
+      "regulatoryStatus": "Authorised",
+      "productClass": "Human",
+      "atcCode": "R03BB06",
+      "biosimilar": false,
+      "dosageForm": "Capsule",
+      "route": "Inhalation",
+      "strengths": [
+        {
+          "value": 50,
+          "unit": "mcg"
+        }
+      ],
+      "caStatusDate": "2013-01-15"
+    },
+    {
+      "id": "DPD_ATRAVET INJECTABLE|ACEPROMAZINE",
+      "source": "DPD",
+      "brandName": "ATRAVET 10 MG INJECTABLE",
+      "activeSubstances": [
+        "ACEPROMAZINE"
+      ],
+      "activeSubstanceCount": 1,
+      "licenceHolder": "BOEHRINGER INGELHEIM ANIMAL HEALTH CANADA INC.",
+      "regulatoryStatus": "Authorised",
+      "productClass": "Veterinary",
+      "biosimilar": false,
+      "dosageForm": "Liquid; Solution",
+      "route": "Intramuscular; Intravenous; Subcutaneous",
+      "strengths": [
+        {
+          "value": 10,
+          "unit": "mg"
+        },
+        {
+          "value": 25,
+          "unit": "mg"
+        }
+      ],
+      "caStatusDate": "2020-03-18"
+    }
+  ]
+}

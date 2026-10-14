@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/wdi-drug-integration/schema/medicines.schema.json",
+  "title": "WDI integrated medicines schema",
+  "description": "JSON equivalent of medicines.xsd. One medicine = one medicine entity (brandName + activeSubstances) from one source. Missing values are omitted (no nulls, no empty strings).",
+  "type": "object",
+  "required": ["medicines"],
+  "additionalProperties": false,
+  "properties": {
+    "medicines": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/medicine" }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "date": { "type": "string", "format": "date", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+    "strength": {
+      "type": "object",
+      "required": ["value"],
+      "additionalProperties": false,
+      "properties": {
+        "value": { "type": "number" },
+        "unit": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "medicine": {
+      "type": "object",
+      "required": ["id", "source", "brandName", "activeSubstances"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^(FDA|EMA|DPD)_.+$" },
+        "source": { "enum": ["FDA", "EMA", "DPD"] },
+        "brandName": { "$ref": "#/$defs/nonEmptyString" },
+        "activeSubstances": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "activeSubstanceCount": { "type": "integer", "minimum": 0 },
+        "licenceHolder": { "$ref": "#/$defs/nonEmptyString" },
+        "regulatoryStatus": {
+          "enum": ["Authorised", "Suspended", "Pending", "Withdrawn", "Application withdrawn", "Refused"]
+        },
+        "productClass": { "enum": ["Human", "Veterinary", "Disinfectant"] },
+        "atcCode": { "type": "string", "pattern": "^Q?[A-Z]([0-9]{2}([A-Z]([A-Z]([0-9]{2})?)?)?)?$" },
+        "generic": { "type": "boolean" },
+        "biosimilar": { "type": "boolean" },
+        "orphanMedicine": { "type": "boolean" },
+        "dosageForm": { "$ref": "#/$defs/nonEmptyString" },
+        "route": { "$ref": "#/$defs/nonEmptyString" },
+        "strengths": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/strength" }
+        },
+        "usApprovalDate": { "$ref": "#/$defs/date" },
+        "euAuthorisationDate": { "$ref": "#/$defs/date" },
+        "caStatusDate": { "$ref": "#/$defs/date" }
+      }
+    }
+  }
+}

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Integrated target schema for the WDI pharmaceutical drug project.
+
+  One <medicine> = one medicine entity (brandName + activeSubstances) from ONE source
+  (Drugs@FDA, EMA Medicines or Health Canada DPD). The 16 attributes follow Table 2 of the
+  project outline; <id> and <source> are record metadata needed by PyDI (identity resolution
+  and fusion need a unique record id and the provenance of each value).
+
+  Conventions shared by all three mappings:
+    * Missing values: omit the element (do NOT write empty elements).
+    * Lists: wrapper element + repeated child element (activeSubstances/activeSubstance,
+      strengths/strength).
+    * Controlled vocabularies (regulatoryStatus, productClass) are enforced here.
+      dosageForm and route are free strings in the schema but MUST come from the lookup
+      tables in ../lookups (dosage_form.xml, route.xml) so the three sources agree.
+    * Multi-valued dosageForm / route (e.g. DPD "SOLUTION; LIQUID") are written as the
+      standardised values joined with "; " (alphabetical order, no duplicates).
+    * Dates: ISO 8601 (YYYY-MM-DD). Booleans: true / false.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+  <!-- ===================================================================== -->
+  <!-- Root                                                                  -->
+  <!-- ===================================================================== -->
+  <xs:element name="medicines">
+    <xs:annotation>
+      <xs:documentation>Root element: the list of medicine records of one source file.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="medicine" type="MedicineType" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:unique name="uniqueMedicineId">
+      <xs:selector xpath="medicine"/>
+      <xs:field xpath="id"/>
+    </xs:unique>
+  </xs:element>
+
+  <!-- ===================================================================== -->
+  <!-- Medicine record                                                       -->
+  <!-- ===================================================================== -->
+  <xs:complexType name="MedicineType">
+    <xs:sequence>
+      <!-- metadata -->
+      <xs:element name="id" type="RecordIdType">
+        <xs:annotation><xs:documentation>Unique record id, prefixed with the source: "FDA_", "EMA_" or "DPD_" followed by the source medicine key (e.g. DPD_AVENTYL|NORTRIPTYLINE).</xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="source" type="SourceType"/>
+
+      <!-- identifying attributes -->
+      <xs:element name="brandName" type="NonEmptyString"/>
+      <xs:element name="activeSubstances">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="activeSubstance" type="NonEmptyString" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="activeSubstanceCount" type="xs:nonNegativeInteger" minOccurs="0"/>
+
+      <!-- descriptive attributes -->
+      <xs:element name="licenceHolder" type="NonEmptyString" minOccurs="0"/>
+      <xs:element name="regulatoryStatus" type="RegulatoryStatusType" minOccurs="0"/>
+      <xs:element name="productClass" type="ProductClassType" minOccurs="0"/>
+      <xs:element name="atcCode" type="AtcCodeType" minOccurs="0"/>
+      <xs:element name="generic" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="biosimilar" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="orphanMedicine" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="dosageForm" type="NonEmptyString" minOccurs="0"/>
+      <xs:element name="route" type="NonEmptyString" minOccurs="0"/>
+      <xs:element name="strengths" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="strength" type="StrengthType" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+
+      <!-- jurisdiction-specific dates -->
+      <xs:element name="usApprovalDate" type="xs:date" minOccurs="0"/>
+      <xs:element name="euAuthorisationDate" type="xs:date" minOccurs="0"/>
+      <xs:element name="caStatusDate" type="xs:date" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- ===================================================================== -->
+  <!-- Strength = numeric value + standardised unit                           -->
+  <!-- ===================================================================== -->
+  <xs:complexType name="StrengthType">
+    <xs:annotation>
+      <xs:documentation>
+        One strength as a (value, unit) pair produced by the MapForce helpers
+        strengthValue / strengthUnit. Concentrations with an explicit denominator quantity are
+        normalised per one denominator unit ("25MG/5ML" becomes 5 mg/mL). Units come from
+        lookups/strength_unit.xml (e.g. mg, g, mcg, %, IU, U, mEq, mg/mL, mcg/actuation).
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="value" type="xs:decimal"/>
+      <xs:element name="unit" type="NonEmptyString" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- ===================================================================== -->
+  <!-- Simple types / controlled vocabularies                                -->
+  <!-- ===================================================================== -->
+  <xs:simpleType name="NonEmptyString">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="RecordIdType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="(FDA|EMA|DPD)_.+"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="SourceType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="FDA"/>
+      <xs:enumeration value="EMA"/>
+      <xs:enumeration value="DPD"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="RegulatoryStatusType">
+    <xs:annotation>
+      <xs:documentation>
+        Harmonised status (see lookups/regulatory_status.xml):
+        Authorised            - currently authorised (FDA Rx/OTC, EMA Authorised, DPD Marketed/Approved/Dormant)
+        Suspended             - authorisation temporarily suspended
+        Pending               - opinion / tentative approval, not yet authorised
+        Withdrawn             - authorisation ended after approval (discontinued, withdrawn, lapsed, expired, revoked, cancelled)
+        Application withdrawn - application withdrawn before authorisation
+        Refused               - authorisation refused
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Authorised"/>
+      <xs:enumeration value="Suspended"/>
+      <xs:enumeration value="Pending"/>
+      <xs:enumeration value="Withdrawn"/>
+      <xs:enumeration value="Application withdrawn"/>
+      <xs:enumeration value="Refused"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ProductClassType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Human"/>
+      <xs:enumeration value="Veterinary"/>
+      <xs:enumeration value="Disinfectant"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="AtcCodeType">
+    <xs:annotation>
+      <xs:documentation>WHO ATC code at any level (A, A01, A01A, A01AA, A01AA01); veterinary ATCvet codes keep their leading Q.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="Q?[A-Z]([0-9]{2}([A-Z]([A-Z]([0-9]{2})?)?)?)?"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

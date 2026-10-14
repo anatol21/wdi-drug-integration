@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:documentation>
+      Schema for MapForce XML lookup tables used by WDI drug integration helper functions.
+    </xs:documentation>
+  </xs:annotation>
+  <xs:element name="lookup">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="entry" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="raw" type="xs:string" use="required"/>
+            <xs:attribute name="std" type="xs:string" use="required"/>
+            <xs:attribute name="sortKey" type="xs:string" use="optional"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

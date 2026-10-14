@@ -1,0 +1,93 @@
+udf,input,expected
+strengthValue,10MG,10
+strengthValue,5MG,5
+strengthValue,0.05%,0.05
+strengthValue,100 MG,100
+strengthValue,25MG/5ML,5
+strengthValue,"20,000 UNITS/ML",20000
+strengthValue,"5MG/10ML (0.5MG/ML)",0.5
+strengthValue,"80MG/4ML (20MG/ML)",20
+strengthValue,"0.6MG/HR **Federal Register determination that product was not discontinued or withdrawn for safety or effectiveness reasons**",0.6
+strengthValue,EQ 2GM BASE/VIAL,2
+strengthValue,EQ 0.05% PHOSPHATE,0.05
+strengthValue,0.2055MG/SPRAY,0.2055
+strengthValue,100 %,100
+strengthValue,"400MEQ/100ML (4MEQ/ML)",4
+strengthValue,"9.0708GM/15ML (604.72MG/ML)",0.60472
+strengthUnit,10MG,mg
+strengthUnit,5MG,mg
+strengthUnit,0.05%,%
+strengthUnit,100 MG,mg
+strengthUnit,25MG/5ML,mg/mL
+strengthUnit,"20,000 UNITS/ML",U/mL
+strengthUnit,"5MG/10ML (0.5MG/ML)",mg/mL
+strengthUnit,"80MG/4ML (20MG/ML)",mg/mL
+strengthUnit,"0.6MG/HR **Federal Register determination that product was not discontinued or withdrawn for safety or effectiveness reasons**",mg/h
+strengthUnit,EQ 2GM BASE/VIAL,g/vial
+strengthUnit,EQ 0.05% PHOSPHATE,%
+strengthUnit,0.2055MG/SPRAY,mg/spray
+strengthUnit,100 %,%
+strengthUnit,"50,000 IU",IU
+strengthUnit,"400MEQ/100ML (4MEQ/ML)",mEq/mL
+dosageForm,TABLET,Tablet
+dosageForm,"TABLET, EXTENDED RELEASE","Tablet, extended-release"
+dosageForm,CAPSULE,Capsule
+dosageForm,INJECTABLE,Injection
+dosageForm,SOLUTION,Solution
+dosageForm,CREAM,Cream
+dosageForm,OINTMENT,Ointment
+dosageForm,"TABLET, ORALLY DISINTEGRATING","Tablet, orally disintegrating"
+dosageForm,"TABLET, DELAYED RELEASE","Tablet, delayed-release"
+dosageForm,TABLET (EXTENDED-RELEASE),"Tablet, extended-release"
+dosageForm,POWDER FOR SOLUTION,Powder for solution
+dosageForm,TABLET (CHEWABLE),"Tablet, chewable"
+dosageForm,UNKNOWN,
+dosageFormList,SOLUTION; LIQUID,Liquid; Solution
+dosageFormList,TABLET; TABLET,Tablet
+dosageFormList,LIQUID; SOLUTION; SOLUTION,Liquid; Solution
+route,ORAL,Oral
+route,INTRAVENOUS,Intravenous
+route,TOPICAL,Topical
+route,OPHTHALMIC,Ophthalmic
+route,SUBCUTANEOUS,Subcutaneous
+route,INHALATION,Inhalation
+route,TRANSDERMAL,Transdermal
+route,INTRAMUSCULAR,Intramuscular
+route,DISINFECTANT (Hospital/HC Facilities),Disinfectant
+route,UNKNOWN,
+routeList,SUBCUTANEOUS; INTRAMUSCULAR; INTRAVENOUS; INTRAVENOUS; INTRAMUSCULAR; SUBCUTANEOUS,Intramuscular; Intravenous; Subcutaneous
+routeList,INTRAVENOUS; INTRAMUSCULAR,Intramuscular; Intravenous
+fdaFormPart,TABLET;ORAL,TABLET
+fdaFormPart,INJECTABLE;INJECTION,INJECTABLE
+fdaFormPart,"TABLET, EXTENDED RELEASE;ORAL","TABLET, EXTENDED RELEASE"
+fdaFormPart,TABLET,TABLET
+fdaRoutePart,TABLET;ORAL,ORAL
+fdaRoutePart,INJECTABLE;INJECTION,INJECTION
+fdaRoutePart,"INJECTABLE;INTRAMUSCULAR, INTRAVENOUS","INTRAMUSCULAR, INTRAVENOUS"
+regulatoryStatus,Prescription,Authorised
+regulatoryStatus,Over-the-counter,Authorised
+regulatoryStatus,Discontinued,Withdrawn
+regulatoryStatus,None (Tentative Approval),Pending
+regulatoryStatus,Authorised,Authorised
+regulatoryStatus,Withdrawn,Withdrawn
+regulatoryStatus,Refused,Refused
+regulatoryStatus,MARKETED,Authorised
+regulatoryStatus,APPROVED,Authorised
+regulatoryStatus,DORMANT,Authorised
+regulatoryStatus,CANCELLED POST MARKET,Withdrawn
+regulatoryStatus,CANCELLED PRE MARKET,Application withdrawn
+bestRegulatoryStatus,MARKETED; CANCELLED POST MARKET,Authorised
+bestRegulatoryStatus,APPROVED; MARKETED,Authorised
+bestRegulatoryStatus,CANCELLED POST MARKET; MARKETED,Authorised
+productClass,Human,Human
+productClass,Veterinary,Veterinary
+productClass,Disinfectant,Disinfectant
+productClass,Radiopharmaceutical,Human
+productClass,NDA,Human
+productClass,ANDA,Human
+productClass,BLA,Human
+stdUnit,MG,mg
+stdUnit,ML,mL
+stdUnit,UNITS,U
+stdUnit,IU,IU
+stdUnit,%,%

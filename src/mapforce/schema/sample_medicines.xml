@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  DUMMY sample for medicines.xsd: illustrative values only (loosely based on the outline's
+  Verkazia / Seebri examples). It shows one record per source and the conventions every mapping
+  must follow: omit missing elements, use list wrappers, standardised vocabularies, ISO dates.
+-->
+<medicines xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:noNamespaceSchemaLocation="medicines.xsd">
+
+  <!-- Drugs@FDA: no ATC / biosimilar / orphan; generic derived from ApplType (ANDA = true) -->
+  <medicine>
+    <id>FDA_VERKAZIA|CYCLOSPORINE</id>
+    <source>FDA</source>
+    <brandName>VERKAZIA</brandName>
+    <activeSubstances>
+      <activeSubstance>CYCLOSPORINE</activeSubstance>
+    </activeSubstances>
+    <activeSubstanceCount>1</activeSubstanceCount>
+    <licenceHolder>HARROW EYE</licenceHolder>
+    <regulatoryStatus>Authorised</regulatoryStatus>
+    <productClass>Human</productClass>
+    <generic>false</generic>
+    <dosageForm>Emulsion</dosageForm>
+    <route>Ophthalmic</route>
+    <strengths>
+      <strength><value>0.1</value><unit>%</unit></strength>
+    </strengths>
+    <usApprovalDate>2021-06-23</usApprovalDate>
+  </medicine>
+
+  <!-- EMA Medicines: no dosage form / route / strength -->
+  <medicine>
+    <id>EMA_VERKAZIA|CICLOSPORIN</id>
+    <source>EMA</source>
+    <brandName>Verkazia</brandName>
+    <activeSubstances>
+      <activeSubstance>ciclosporin</activeSubstance>
+    </activeSubstances>
+    <activeSubstanceCount>1</activeSubstanceCount>
+    <licenceHolder>Santen Oy</licenceHolder>
+    <regulatoryStatus>Authorised</regulatoryStatus>
+    <productClass>Human</productClass>
+    <atcCode>S01XA18</atcCode>
+    <generic>false</generic>
+    <biosimilar>false</biosimilar>
+    <orphanMedicine>false</orphanMedicine>
+    <euAuthorisationDate>2018-07-06</euAuthorisationDate>
+  </medicine>
+
+  <!-- Health Canada DPD: two strengths, multi-valued route joined with "; " -->
+  <medicine>
+    <id>DPD_SEEBRI BREEZHALER|GLYCOPYRRONIUM</id>
+    <source>DPD</source>
+    <brandName>SEEBRI BREEZHALER</brandName>
+    <activeSubstances>
+      <activeSubstance>GLYCOPYRRONIUM (GLYCOPYRRONIUM BROMIDE)</activeSubstance>
+    </activeSubstances>
+    <activeSubstanceCount>1</activeSubstanceCount>
+    <licenceHolder>NOVARTIS PHARMACEUTICALS CANADA INC</licenceHolder>
+    <regulatoryStatus>Authorised</regulatoryStatus>
+    <productClass>Human</productClass>
+    <atcCode>R03BB06</atcCode>
+    <biosimilar>false</biosimilar>
+    <dosageForm>Capsule</dosageForm>
+    <route>Inhalation</route>
+    <strengths>
+      <strength><value>50</value><unit>mcg</unit></strength>
+    </strengths>
+    <caStatusDate>2013-01-15</caStatusDate>
+  </medicine>
+
+  <!-- Health Canada DPD, veterinary: list-valued strengths, multi-valued dosage form / route -->
+  <medicine>
+    <id>DPD_ATRAVET INJECTABLE|ACEPROMAZINE</id>
+    <source>DPD</source>
+    <brandName>ATRAVET 10 MG INJECTABLE</brandName>
+    <activeSubstances>
+      <activeSubstance>ACEPROMAZINE</activeSubstance>
+    </activeSubstances>
+    <activeSubstanceCount>1</activeSubstanceCount>
+    <licenceHolder>BOEHRINGER INGELHEIM ANIMAL HEALTH CANADA INC.</licenceHolder>
+    <regulatoryStatus>Authorised</regulatoryStatus>
+    <productClass>Veterinary</productClass>
+    <biosimilar>false</biosimilar>
+    <dosageForm>Liquid; Solution</dosageForm>
+    <route>Intramuscular; Intravenous; Subcutaneous</route>
+    <strengths>
+      <strength><value>10</value><unit>mg</unit></strength>
+      <strength><value>25</value><unit>mg</unit></strength>
+    </strengths>
+    <caStatusDate>2020-03-18</caStatusDate>
+  </medicine>
+
+</medicines>
