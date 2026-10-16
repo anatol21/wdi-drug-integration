@@ -116,6 +116,17 @@ Lookup XML files are located in [`../lookups/`](file:///Users/gabrielhimmelein/P
 
 ---
 
+### 2.7 ATC Code Standardization
+
+#### `stdAtcCode(raw: string) -> string?`
+* **Purpose:** Cleans single or semicolon-separated WHO ATC / veterinary ATCvet codes so 100% of EMA and DPD records validate against `AtcCodeType` in `medicines.xsd`:
+  * Strips trailing asterisks (e.g. DPD `"L04AA40*"` $\rightarrow$ `"L04AA40"`, ensuring exact match with EMA for *Mavenclad*).
+  * Drops unassigned placeholders (`"Not yet assigned"` in EMA, `"UNASSIGN"` in DPD) $\rightarrow$ `()` (element omitted).
+  * Fixes EMA typo `"VO4D"` $\rightarrow$ `"V04D"`.
+  * Deduplicates, sorts, and formats multi-code strings (e.g. `"A10AB04;A10AD04"` $\rightarrow$ `"A10AB04; A10AD04"`, or EMA human + vet `concat(ATC_human, ";", ATC_vet)` $\rightarrow$ `"QI09AA07"`).
+
+---
+
 ## 3. How to Plug Them into Altova MapForce
 
 ### Method A: Import as Function Library (Recommended)

@@ -55,8 +55,11 @@ route,TRANSDERMAL,Transdermal
 route,INTRAMUSCULAR,Intramuscular
 route,DISINFECTANT (Hospital/HC Facilities),Disinfectant
 route,UNKNOWN,
+route,"INTRAMUSCULAR, INTRAVENOUS",Intramuscular; Intravenous
+route,ORAL AND TABLET; DELAYED RELEASE,Oral
 routeList,SUBCUTANEOUS; INTRAMUSCULAR; INTRAVENOUS; INTRAVENOUS; INTRAMUSCULAR; SUBCUTANEOUS,Intramuscular; Intravenous; Subcutaneous
 routeList,INTRAVENOUS; INTRAMUSCULAR,Intramuscular; Intravenous
+routeList,"INTRAMUSCULAR, INTRAVENOUS; SUBCUTANEOUS",Intramuscular; Intravenous; Subcutaneous
 fdaFormPart,TABLET;ORAL,TABLET
 fdaFormPart,INJECTABLE;INJECTION,INJECTABLE
 fdaFormPart,"TABLET, EXTENDED RELEASE;ORAL","TABLET, EXTENDED RELEASE"
@@ -79,13 +82,25 @@ regulatoryStatus,CANCELLED PRE MARKET,Application withdrawn
 bestRegulatoryStatus,MARKETED; CANCELLED POST MARKET,Authorised
 bestRegulatoryStatus,APPROVED; MARKETED,Authorised
 bestRegulatoryStatus,CANCELLED POST MARKET; MARKETED,Authorised
+bestRegulatoryStatus,Discontinued; Prescription,Authorised
 productClass,Human,Human
 productClass,Veterinary,Veterinary
 productClass,Disinfectant,Disinfectant
 productClass,Radiopharmaceutical,Human
+productClass,Human; Veterinary,Human
+productClass,Veterinary; Disinfectant,Veterinary
 productClass,NDA,Human
 productClass,ANDA,Human
 productClass,BLA,Human
+productClass,ANDA; NDA,Human
+atcCode,L04AA40*,L04AA40
+atcCode,A10AB04;A10AD04,A10AB04; A10AD04
+atcCode,N02BA01; B01AC06,B01AC06; N02BA01
+atcCode,;QI09AA07,QI09AA07
+atcCode,QI20CX;QI20CX,QI20CX
+atcCode,VO4D,V04D
+atcCode,Not yet assigned,
+atcCode,UNASSIGN,
 stdUnit,MG,mg
 stdUnit,ML,mL
 stdUnit,UNITS,U

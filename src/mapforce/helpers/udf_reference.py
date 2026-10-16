@@ -124,6 +124,25 @@ def std_unit(raw):
     return _lookup("strength_unit.xml", raw)
 
 
+def std_atc_code(raw):
+    """UDF stdAtcCode(raw): standardizes single or semicolon-separated ATC/ATCvet codes.
+    - Strips '*' (e.g. DPD 'L04AA40*' -> 'L04AA40')
+    - Drops placeholders ('NOT YET ASSIGNED', 'UNASSIGN')
+    - Fixes EMA typo 'VO4D' -> 'V04D'
+    - Deduplicates, sorts, and joins multiple codes with '; '
+    """
+    parts = []
+    for token in (raw or "").split(";"):
+        c = clean_text(token).replace("*", "")
+        if not c or c in ("NOT YET ASSIGNED", "UNASSIGN"):
+            continue
+        if c == "VO4D":
+            c = "V04D"
+        parts.append(c)
+    distinct = sorted(set(parts))
+    return "; ".join(distinct) or None
+
+
 # ---------------------------------------------------------------- list helpers
 def std_list(values, sep, std_fn):
     """UDFs dosageFormList / routeList (value list -> standardised '; '-joined string)
@@ -143,7 +162,7 @@ def dosage_form_list(values, sep=";"):
 
 
 def route_list(values, sep=";"):
-    return std_list(values, sep, std_route)
+    return std_list((values or "").replace(",", sep), sep, std_route)
 
 
 def best_regulatory_status(values, sep=";"):
@@ -243,7 +262,7 @@ FUNCS = {
     "route": std_route, "routeList": route_list,
     "fdaFormPart": fda_form_part, "fdaRoutePart": fda_route_part,
     "regulatoryStatus": std_regulatory_status, "bestRegulatoryStatus": best_regulatory_status,
-    "productClass": std_product_class, "stdUnit": std_unit,
+    "productClass": std_product_class, "stdUnit": std_unit, "atcCode": std_atc_code,
 }
 
 

@@ -189,4 +189,19 @@
 			<p>Extracts route of administration from FDA composite Form column (substring after semicolon).</p>
 		</description>
 	</component>
+
+	<component name="stdAtcCode" library="user" uid="1120" kind="5">
+		<properties>
+			<language id="builtin"/>
+		</properties>
+		<sources>
+			<datapoint pos="0" key="121"/>
+		</sources>
+		<targets>
+			<datapoint pos="0" key="122"/>
+		</targets>
+		<description>
+			<p>Standardizes single or semicolon-separated ATC/ATCvet codes, strips trailing '*', fixes 'VO4D'->'V04D', and drops 'Not yet assigned'/'UNASSIGN'.</p>
+		</description>
+	</component>
 </mapping>

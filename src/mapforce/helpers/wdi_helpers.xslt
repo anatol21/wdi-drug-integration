@@ -178,7 +178,7 @@
 
     <xsl:function name="wdi:routeList" as="xs:string?">
         <xsl:param name="values" as="xs:string?"/>
-        <xsl:variable name="tokens" select="tokenize(string($values), ';')"/>
+        <xsl:variable name="tokens" select="tokenize(translate(string($values), ',', ';'), ';')"/>
         <xsl:variable name="mapped" as="xs:string*">
             <xsl:for-each select="$tokens">
                 <xsl:variable name="m" select="wdi:stdRoute(.)"/>
@@ -210,6 +210,28 @@
         <xsl:choose>
             <xsl:when test="$entry">
                 <xsl:sequence select="if ($entry/@std != '') then string($entry/@std) else ()"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:sequence select="()"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
+
+    <xsl:function name="wdi:stdAtcCode" as="xs:string?">
+        <xsl:param name="raw" as="xs:string?"/>
+        <xsl:variable name="tokens" select="tokenize(string($raw), ';')"/>
+        <xsl:variable name="cleaned" as="xs:string*">
+            <xsl:for-each select="$tokens">
+                <xsl:variable name="c" select="translate(wdi:cleanText(.), '*', '')"/>
+                <xsl:if test="$c != '' and $c != 'NOT YET ASSIGNED' and $c != 'UNASSIGN'">
+                    <xsl:sequence select="if ($c = 'VO4D') then 'V04D' else $c"/>
+                </xsl:if>
+            </xsl:for-each>
+        </xsl:variable>
+        <xsl:variable name="distinct" select="fn:distinct-values($cleaned)"/>
+        <xsl:choose>
+            <xsl:when test="exists($distinct)">
+                <xsl:sequence select="string-join(fn:sort($distinct), '; ')"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:sequence select="()"/>

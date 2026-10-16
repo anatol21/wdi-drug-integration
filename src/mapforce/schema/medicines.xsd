@@ -158,10 +158,10 @@
 
   <xs:simpleType name="AtcCodeType">
     <xs:annotation>
-      <xs:documentation>WHO ATC code at any level (A, A01, A01A, A01AA, A01AA01); veterinary ATCvet codes keep their leading Q.</xs:documentation>
+      <xs:documentation>WHO ATC code at any level (A, A01, A01A, A01AA, A01AA01), veterinary ATCvet codes (leading Q), or multiple codes joined with "; ".</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:string">
-      <xs:pattern value="Q?[A-Z]([0-9]{2}([A-Z]([A-Z]([0-9]{2})?)?)?)?"/>
+      <xs:pattern value="Q?[A-Z]([0-9X]{2}([A-Z]([A-Z]([0-9]{2})?)?)?)?(; ?Q?[A-Z]([0-9X]{2}([A-Z]([A-Z]([0-9]{2})?)?)?)?)*"/>
     </xs:restriction>
   </xs:simpleType>
 

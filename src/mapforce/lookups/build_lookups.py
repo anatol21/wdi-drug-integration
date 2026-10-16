@@ -104,10 +104,24 @@ PRODUCT_CLASS = {
     "VETERINARY": "Veterinary",
     "DISINFECTANT": "Disinfectant",
     "RADIOPHARMACEUTICAL": "Human",     # DPD: radiopharmaceuticals are human-use products
+    # DPD consolidated medicines with multiple DIN classes (priority: Human > Veterinary > Disinfectant)
+    "HUMAN; VETERINARY": "Human",
+    "VETERINARY; HUMAN": "Human",
+    "DISINFECTANT; HUMAN": "Human",
+    "HUMAN; DISINFECTANT": "Human",
+    "VETERINARY; DISINFECTANT": "Veterinary",
+    "DISINFECTANT; VETERINARY": "Veterinary",
     # Drugs@FDA has no class column; derive it from ApplType (all Drugs@FDA products are human)
     "NDA": "Human",
     "ANDA": "Human",
     "BLA": "Human",
+    "ANDA; NDA": "Human",
+    "NDA; ANDA": "Human",
+    "ANDA; BLA": "Human",
+    "BLA; ANDA": "Human",
+    "BLA; NDA": "Human",
+    "NDA; BLA": "Human",
+    "ANDA; BLA; NDA": "Human",
 }
 
 # ----------------------------------------------------------------------------------------------
@@ -250,8 +264,8 @@ ROUTE_EXPLICIT = {
     "": "", "N/A": "", "UNKNOWN": "", "NIL": "", "0-UNASSIGNED": "", "MISCELLANEOUS": "",
     "REFER (SEE DOSAGE FORM)": "", "LABORATORY TEST": "",
     "FILM COATED": "", "SOLUTION": "", "SUSPENSION": "", "POWDER": "", "FOR SOLUTION": "",
-    "CONCENTRATE": "", "DROPS": "", "EXTENDED RELEASE": "", "SINGLE-USE": "", "SINGLE-DOSE": "",
-    "MULTIDOSE": "", "PREFILLED": "", "FOR RX COMPOUNDING": "",
+    "CONCENTRATE": "", "DROPS": "", "EXTENDED RELEASE": "", "DELAYED RELEASE": "",
+    "SINGLE-USE": "", "SINGLE-DOSE": "", "MULTIDOSE": "", "PREFILLED": "", "FOR RX COMPOUNDING": "",
 }
 ROUTE_RULES = [
     (r"^DISINFECTANT", "Disinfectant"),
@@ -260,6 +274,16 @@ ROUTE_RULES = [
 
 
 def route_default(raw):
+    if "," in raw or ";" in raw:
+        parts = []
+        for token in raw.replace(",", ";").split(";"):
+            t = clean_text(token)
+            if not t:
+                continue
+            mapped = apply_rules(t, ROUTE_EXPLICIT, ROUTE_RULES, lambda r: r.capitalize())
+            if mapped:
+                parts.extend(p.strip() for p in mapped.split(";") if p.strip())
+        return "; ".join(sorted(set(parts)))
     return raw.capitalize()   # e.g. INTRATHECAL -> Intrathecal (standard spelling, Title case)
 
 
@@ -365,6 +389,8 @@ def main():
     fda_routes = set()
     for f in fda_prod.Form:
         route_part = f.split(";", 1)[1] if ";" in f else ""
+        if clean_text(route_part):
+            fda_routes.add(clean_text(route_part))
         fda_routes |= split_list([route_part], sep=",")
     observed = fda_routes | split_list(dpd.routes)
     route = build_table(observed, ROUTE_EXPLICIT, ROUTE_RULES, route_default, label="route")

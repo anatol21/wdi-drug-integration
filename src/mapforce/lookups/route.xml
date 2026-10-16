@@ -7,9 +7,11 @@
   <entry raw="BILIARY" std="Biliary"/>
   <entry raw="BLOCK/INFILTRATION" std="Infiltration"/>
   <entry raw="BUCCAL" std="Buccal"/>
+  <entry raw="BUCCAL, SUBLINGUAL" std="Buccal; Sublingual"/>
   <entry raw="CARDIAC" std="Cardiac"/>
   <entry raw="CONCENTRATE" std=""/>
   <entry raw="CYSTOGRAPHY" std="Intravesical"/>
+  <entry raw="DELAYED RELEASE" std=""/>
   <entry raw="DENTAL" std="Dental"/>
   <entry raw="DISINFECTANT (BARN)" std="Disinfectant"/>
   <entry raw="DISINFECTANT (CONTACT LENS)" std="Disinfectant"/>
@@ -36,14 +38,20 @@
   <entry raw="IMPLANTATION" std="Implantation"/>
   <entry raw="INFILTRATION" std="Infiltration"/>
   <entry raw="INHALATION" std="Inhalation"/>
+  <entry raw="INHALATION, INJECTION" std="Inhalation; Injection"/>
+  <entry raw="INHALATION, INTRAVENOUS" std="Inhalation; Intravenous"/>
+  <entry raw="INHALATION, ORAL" std="Inhalation; Oral"/>
   <entry raw="INJECTABLE" std="Injection"/>
   <entry raw="INJECTION" std="Injection"/>
+  <entry raw="INJECTION, ORAL" std="Injection; Oral"/>
+  <entry raw="INJECTION, ORAL, RECTAL" std="Injection; Oral; Rectal"/>
   <entry raw="INSTILLATION" std="Instillation"/>
   <entry raw="INTERSTITIAL" std="Interstitial"/>
   <entry raw="INTRA-AMNIOTIC" std="Intra-amniotic"/>
   <entry raw="INTRA-ANAL" std="Rectal"/>
   <entry raw="INTRA-ARTERIAL" std="Intra-arterial"/>
   <entry raw="INTRA-ARTICULAR" std="Intra-articular"/>
+  <entry raw="INTRA-ARTICULAR, INTRAMUSCULAR, INTRAVITREAL" std="Intra-articular; Intramuscular; Intravitreal"/>
   <entry raw="INTRABRANCHIAL" std="Intrabranchial"/>
   <entry raw="INTRABURSAL" std="Intrabursal"/>
   <entry raw="INTRACAMERAL" std="Intraocular"/>
@@ -51,6 +59,7 @@
   <entry raw="INTRACAUDAL" std="Intracaudal"/>
   <entry raw="INTRACAVERNOSAL" std="Intracavernosal"/>
   <entry raw="INTRACAVITARY" std="Intracavitary"/>
+  <entry raw="INTRACAVITARY, INTRAVENOUS, INTRAVESICAL" std="Intracavitary; Intravenous; Intravesical"/>
   <entry raw="INTRACEREBROVENTRICULAR" std="Intracerebroventricular"/>
   <entry raw="INTRACERVICAL" std="Intracervical"/>
   <entry raw="INTRACORONARY" std="Intracoronary"/>
@@ -64,8 +73,13 @@
   <entry raw="INTRAINTESTINAL (UPPER)" std="Intestinal"/>
   <entry raw="INTRALESIONAL" std="Intralesional"/>
   <entry raw="INTRALYMPHATIC" std="Intralymphatic"/>
+  <entry raw="INTRALYMPHATIC, INTRAUTERINE" std="Intralymphatic; Intrauterine"/>
   <entry raw="INTRAMAMMARY" std="Intramammary"/>
   <entry raw="INTRAMUSCULAR" std="Intramuscular"/>
+  <entry raw="INTRAMUSCULAR, INTRAVENOUS" std="Intramuscular; Intravenous"/>
+  <entry raw="INTRAMUSCULAR, INTRAVENOUS, SUBCUTANEOUS" std="Intramuscular; Intravenous; Subcutaneous"/>
+  <entry raw="INTRAMUSCULAR, ORAL" std="Intramuscular; Oral"/>
+  <entry raw="INTRAMUSCULAR, SUBCUTANEOUS" std="Intramuscular; Subcutaneous"/>
   <entry raw="INTRAOCULAR" std="Intraocular"/>
   <entry raw="INTRAOSSEOUS" std="Intraosseous"/>
   <entry raw="INTRAPERITONEAL" std="Intraperitoneal"/>
@@ -81,13 +95,24 @@
   <entry raw="INTRAUTERINE" std="Intrauterine"/>
   <entry raw="INTRAVASCULAR" std="Intravascular"/>
   <entry raw="INTRAVENOUS" std="Intravenous"/>
+  <entry raw="INTRAVENOUS, INTERSTITIAL" std="Interstitial; Intravenous"/>
+  <entry raw="INTRAVENOUS, INTRAMUSCULAR, SUBCUTANEOUS, INTRAOSSEOUS, ENDOTRACHEAL" std="Intramuscular; Intraosseous; Intratracheal; Intravenous; Subcutaneous"/>
+  <entry raw="INTRAVENOUS, INTRAOCULAR, INTRAMUSCULAR, SUBCUTANEOUS" std="Intramuscular; Intraocular; Intravenous; Subcutaneous"/>
+  <entry raw="INTRAVENOUS, INTRAVENOUS" std="Intravenous"/>
+  <entry raw="INTRAVENOUS, INTRAVESICULAR, OPHTHALMIC" std="Intravenous; Intravesical; Ophthalmic"/>
+  <entry raw="INTRAVENOUS, ORAL" std="Intravenous; Oral"/>
+  <entry raw="INTRAVENOUS, SUBCUTANEOUS" std="Intravenous; Subcutaneous"/>
   <entry raw="INTRAVENTRICULAR" std="Intraventricular"/>
   <entry raw="INTRAVESICAL" std="Intravesical"/>
+  <entry raw="INTRAVESICAL, URETERAL" std="Intravesical; Ureteral"/>
   <entry raw="INTRAVESICULAR" std="Intravesical"/>
   <entry raw="INTRAVITREAL" std="Intravitreal"/>
   <entry raw="INTUBING" std="Intratracheal"/>
   <entry raw="IONTOPHORESIS" std="Iontophoresis"/>
+  <entry raw="IONTOPHORESIS, TOPICAL" std="Iontophoresis; Topical"/>
+  <entry raw="IONTOPHORESIS, TRANSDERMAL" std="Iontophoresis; Transdermal"/>
   <entry raw="IRRIGATION" std="Irrigation"/>
+  <entry raw="IRRIGATION, URETHRAL" std="Irrigation; Urethral"/>
   <entry raw="IV (INFUSION)" std="Intravenous"/>
   <entry raw="LABORATORY TEST" std=""/>
   <entry raw="MISCELLANEOUS" std=""/>
@@ -98,10 +123,12 @@
   <entry raw="NERVE BLOCK" std="Infiltration"/>
   <entry raw="NIL" std=""/>
   <entry raw="OPHTHALMIC" std="Ophthalmic"/>
+  <entry raw="OPHTHALMIC, OTIC" std="Ophthalmic; Otic"/>
   <entry raw="ORAL" std="Oral"/>
   <entry raw="ORAL AND TABLET" std="Oral"/>
-  <entry raw="ORAL AND TABLET; DELAYED RELEASE" std="Oral and tablet; delayed release"/>
+  <entry raw="ORAL AND TABLET; DELAYED RELEASE" std="Oral"/>
   <entry raw="ORAL SUSPENSION" std="Oral"/>
+  <entry raw="ORAL, RECTAL" std="Oral; Rectal"/>
   <entry raw="ORAL-20" std="Oral"/>
   <entry raw="ORAL-21" std="Oral"/>
   <entry raw="ORAL-28" std="Oral"/>
@@ -110,19 +137,24 @@
   <entry raw="PARENTERAL (UNSPECIFIED)" std="Injection"/>
   <entry raw="PERCUTANEOUS" std="Percutaneous"/>
   <entry raw="PERFUSION" std="Intravenous"/>
+  <entry raw="PERFUSION, BILIARY" std="Biliary; Intravenous"/>
+  <entry raw="PERFUSION, CARDIAC" std="Cardiac; Intravenous"/>
   <entry raw="PERIARTICULAR" std="Periarticular"/>
   <entry raw="PERIODONTAL" std="Periodontal"/>
   <entry raw="PERIOSTEAL" std="Periosteal"/>
   <entry raw="POWDER" std=""/>
+  <entry raw="POWDER,FOR SOLUTION" std=""/>
   <entry raw="PREFILLED" std=""/>
   <entry raw="PYELOCALYCEAL" std="Pyelocalyceal"/>
   <entry raw="RECTAL" std="Rectal"/>
+  <entry raw="RECTAL, SUBLINGUAL" std="Rectal; Sublingual"/>
   <entry raw="REFER (SEE DOSAGE FORM)" std=""/>
   <entry raw="RETROBULBAR" std="Retrobulbar"/>
   <entry raw="SINGLE-DOSE" std=""/>
   <entry raw="SINGLE-USE" std=""/>
   <entry raw="SOFT TISSUE INJECTION" std="Injection"/>
   <entry raw="SOLUTION" std=""/>
+  <entry raw="SOLUTION,CONCENTRATE" std=""/>
   <entry raw="SPINAL" std="Intraspinal"/>
   <entry raw="SUBARACHNOIDAL" std="Intrathecal"/>
   <entry raw="SUBCUTANEOUS" std="Subcutaneous"/>
@@ -134,6 +166,7 @@
   <entry raw="SUPRACHOROIDAL" std="Suprachoroidal"/>
   <entry raw="SURGICAL" std="Surgical"/>
   <entry raw="SUSPENSION" std=""/>
+  <entry raw="SUSPENSION, EXTENDED RELEASE" std=""/>
   <entry raw="TEAT DILATOR" std="Intramammary"/>
   <entry raw="TEAT-DIP" std="Topical"/>
   <entry raw="TOPICAL" std="Topical"/>
@@ -141,6 +174,7 @@
   <entry raw="TOPICAL (FOOD PREMISES)" std="Topical"/>
   <entry raw="TOPICAL (HOSPITAL/HC FACILITIES)" std="Topical"/>
   <entry raw="TOPICAL (HOUSEHOLD)" std="Topical"/>
+  <entry raw="TOPICAL, VAGINAL" std="Topical; Vaginal"/>
   <entry raw="TRANSDERMAL" std="Transdermal"/>
   <entry raw="TRANSMUCOSAL" std="Transmucosal"/>
   <entry raw="UDDER WASH" std="Topical"/>

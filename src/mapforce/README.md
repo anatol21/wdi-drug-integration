@@ -79,22 +79,23 @@ The target schema represents a **medicine entity** (`brandName` + `activeSubstan
 
 ### A. Drugs@FDA Mapper (`fda_mapping.mfd`)
 * **Source Tables:**
-  * Join `Products.txt` with `Applications.txt` on `ApplNo`.
+  * Join `Products.txt` with `Applications.txt` on `ApplNo` (note: 11 product rows have no matching `ApplNo` in `Applications.txt`, and 1 row `ApplNo=221337` `MEDICAL AIR, USP` has an empty `ActiveIngredient`—drop empty `ActiveIngredient` when consolidating entities, just like `entity_count.py`).
   * Join `MarketingStatus.txt` and `MarketingStatus_Lookup.txt` on `MarketingStatusID`.
+  * When pre-consolidating products into medicine entities, split `Products.Form` into `fdaFormPart(Form)` and `fdaRoutePart(Form)` *before* joining distinct values across products with `"; "`.
 * **Field Connections:**
-  * `id`: `concat("FDA_", DrugName, "|", ActiveIngredient)`
+  * `id`: `concat("FDA_", medicine_id)` (or `concat("FDA_", DrugName, "|", ActiveIngredient)`)
   * `source`: Constant `"FDA"`
   * `brandName`: `DrugName`
   * `activeSubstances`: `tokenize(ActiveIngredient, ';')`
   * `activeSubstanceCount`: `count(activeSubstances)`
   * `licenceHolder`: `SponsorName`
-  * `regulatoryStatus`: `stdRegulatoryStatus(MarketingStatusDescription)`
-  * `productClass`: `stdProductClass(ApplType)` $\rightarrow$ `"Human"`
-  * `dosageForm`: `stdDosageForm(fdaFormPart(Form))`
-  * `route`: `stdRoute(fdaRoutePart(Form))`
+  * `regulatoryStatus`: `bestRegulatoryStatus(MarketingStatusDescription)` (or `stdRegulatoryStatus` for single value)
+  * `productClass`: `stdProductClass(ApplType)` $\rightarrow$ `"Human"` (or constant `"Human"` if `ApplNo` is missing from `Applications.txt`)
+  * `dosageForm`: `dosageFormList(dosage_forms)` (or `stdDosageForm(fdaFormPart(Form))` per product)
+  * `route`: `routeList(routes)` (or `stdRoute(fdaRoutePart(Form))` per product; handles both `,` and `;` separators)
   * `generic`: `equal(ApplType, "ANDA")`
   * `strengths`: For each token in `tokenize(Strength, ';')`, map `strengthValue` $\rightarrow$ `value` and `strengthUnit` $\rightarrow$ `unit`.
-  * `usApprovalDate`: Earliest `SubmissionStatusDate` where `SubmissionStatus = "AP"`.
+  * `usApprovalDate`: Earliest non-empty `substring(SubmissionStatusDate, 1, 10)` where `SubmissionStatus = "AP"` (note: 8 `AP` rows in `Submissions.txt` have an empty `SubmissionStatusDate`).
 
 ### B. Health Canada DPD Mapper (`dpd_mapping.mfd`)
 * **Source Table:** `data/2_processed/dpd_medicines.csv`
@@ -107,7 +108,7 @@ The target schema represents a **medicine entity** (`brandName` + `activeSubstan
   * `licenceHolder`: `licence_holder`
   * `regulatoryStatus`: `bestRegulatoryStatus(current_status)`
   * `productClass`: `stdProductClass(product_class)`
-  * `atcCode`: `atc_code`
+  * `atcCode`: `stdAtcCode(atc_code)`
   * `biosimilar`: `equal(biosimilar, "Yes")`
   * `dosageForm`: `dosageFormList(dosage_forms)`
   * `route`: `routeList(routes)`
@@ -125,7 +126,7 @@ The target schema represents a **medicine entity** (`brandName` + `activeSubstan
   * `licenceHolder`: `Marketing authorisation developer / applicant / holder`
   * `regulatoryStatus`: `stdRegulatoryStatus(Medicine status)`
   * `productClass`: `stdProductClass(Category)`
-  * `atcCode`: `ATC code (human)`
+  * `atcCode`: `stdAtcCode(concat(ATC code (human), ";", ATCvet code (veterinary)))`
   * `generic`: `equal(Generic, "Yes")`
   * `biosimilar`: `equal(Biosimilar, "Yes")`
   * `orphanMedicine`: `equal(Orphan medicine, "Yes")`
