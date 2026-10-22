@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Edited with Altova MapForce 2026r2 -->
+<mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="35">
+	<settings>
+		<libraries>
+			<import path="helpers\wdi_helpers.mfd" saverelative="1"/>
+		</libraries>
+	</settings>
+	<resources/>
+	<component name="defaultmap" uid="1">
+		<properties SelectedLanguage="builtin"/>
+		<structure>
+			<children>
+				<component name="constant" library="core" uid="1104" kind="2">
+					<targets>
+						<datapoint pos="0" key="1"/>
+					</targets>
+					<view ltx="337" lty="-84" rbx="402" rby="-67"/>
+					<data>
+						<constant value="DPD_" datatype="string"/>
+					</data>
+				</component>
+				<component name="concat" library="core" uid="1106" kind="5" growable="1" growablebasename="value">
+					<sources>
+						<datapoint pos="0" key="2"/>
+						<datapoint pos="1" key="3"/>
+					</sources>
+					<targets>
+						<datapoint pos="0" key="4"/>
+					</targets>
+					<view ltx="453" lty="-83" rbx="528" rby="-27"/>
+				</component>
+				<component name="constant" library="core" uid="1109" kind="2">
+					<targets>
+						<datapoint pos="0" key="5"/>
+					</targets>
+					<view ltx="406" lty="255" rbx="461" rby="272"/>
+					<data>
+						<constant value="Yes" datatype="string"/>
+					</data>
+				</component>
+				<component name="equal" library="core" uid="1108" kind="5">
+					<sources>
+						<datapoint pos="0" key="6"/>
+						<datapoint pos="1" key="7"/>
+					</sources>
+					<targets>
+						<datapoint pos="0" key="8"/>
+					</targets>
+					<view ltx="439" lty="186" rbx="491" rby="241"/>
+				</component>
+				<component name="dpd_entities" library="text" uid="3" kind="16">
+					<properties/>
+					<view ltx="186" lty="1" rbx="384" rby="501"/>
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+									<namespace uid="http://www.altova.com/mapforce"/>
+								</namespaces>
+							</header>
+							<entry name="FileInstance" ns="1" expanded="1">
+								<entry name="document" ns="1" expanded="1">
+									<entry name="Rows" outkey="9" expanded="1">
+										<entry name="medicine_id" outkey="10"/>
+										<entry name="brand_name" outkey="11"/>
+										<entry name="active_substances" outkey="12"/>
+										<entry name="licence_holder" outkey="13"/>
+										<entry name="biosimilar" outkey="14"/>
+										<entry name="status_date" outkey="15"/>
+									</entry>
+								</entry>
+							</entry>
+						</root>
+						<text type="csv" encoding="1000" byteorder="1" byteordermark="0" inputinstance="\\Mac\Home\Documents\IE 683 Web Data integration Project\wdi-drug-integration\data\2_processed\dpd_entities.csv">
+							<settings separator="," quote="&quot;" firstrownames="true" removeempty="true">
+								<names root="dpd_entities" block="Rows">
+									<field0 name="medicine_id" type="string"/>
+									<field1 name="brand_name" type="string"/>
+									<field2 name="active_substances" type="string"/>
+									<field3 name="strengths" type="string"/>
+									<field4 name="licence_holder" type="string"/>
+									<field5 name="licence_holders_all" type="string"/>
+									<field6 name="product_class" type="string"/>
+									<field7 name="atc_code" type="string"/>
+									<field8 name="biosimilar" type="string"/>
+									<field9 name="schedule" type="string"/>
+									<field10 name="dosage_forms" type="string"/>
+									<field11 name="routes" type="string"/>
+									<field12 name="current_status" type="string"/>
+									<field13 name="status_date" type="string"/>
+									<field14 name="approval_date" type="string"/>
+									<field15 name="first_marketed_date" type="string"/>
+									<field16 name="number_of_dins" type="string"/>
+									<field17 name="drug_codes" type="string"/>
+								</names>
+							</settings>
+						</text>
+					</data>
+				</component>
+				<component name="medicines" library="xml" uid="2" kind="14">
+					<properties XSLTTargetEncoding="UTF-8" XSLTDefaultOutput="1"/>
+					<view ltx="771" lty="-30" rbx="1276" rby="345"/>
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+									<namespace uid="http://www.altova.com/mapforce"/>
+								</namespaces>
+							</header>
+							<entry name="FileInstance" ns="1" expanded="1">
+								<entry name="document" ns="1" expanded="1" casttotargettypemode="cast-in-subtree">
+									<entry name="medicines" expanded="1">
+										<entry name="medicine" inpkey="16" expanded="1">
+											<entry name="id" inpkey="17"/>
+											<entry name="source" inpkey="18"/>
+											<entry name="brandName" inpkey="19"/>
+											<entry name="activeSubstances" expanded="1">
+												<entry name="activeSubstance" inpkey="20"/>
+											</entry>
+											<entry name="licenceHolder" inpkey="21"/>
+											<entry name="biosimilar" inpkey="22"/>
+											<entry name="caStatusDate" inpkey="23"/>
+										</entry>
+									</entry>
+								</entry>
+							</entry>
+						</root>
+						<document schema="schema\medicines.xsd" instanceroot="{}medicines" outputinstance="schema\medicines.xml"/>
+					</data>
+				</component>
+				<component name="tokenize" library="core" uid="1111" kind="5">
+					<sources>
+						<datapoint pos="0" key="24"/>
+						<datapoint pos="1" key="25"/>
+					</sources>
+					<targets>
+						<datapoint pos="0" key="26"/>
+					</targets>
+					<view ltx="589" lty="86" rbx="676" rby="141"/>
+				</component>
+				<component name="constant" library="core" uid="1103" kind="2">
+					<targets>
+						<datapoint pos="0" key="27"/>
+					</targets>
+					<view ltx="605" lty="-69" rbx="665" rby="-52"/>
+					<data>
+						<constant value="DPD" datatype="string"/>
+					</data>
+				</component>
+				<component name="constant" library="core" uid="1112" kind="2">
+					<targets>
+						<datapoint pos="0" key="28"/>
+					</targets>
+					<view ltx="501" lty="169" rbx="546" rby="186"/>
+					<data>
+						<constant value="; " datatype="string"/>
+					</data>
+				</component>
+			</children>
+		</structure>
+		<connections>
+			<edge from="1" to="2"/>
+			<edge from="10" to="3"/>
+			<edge from="14" to="6"/>
+			<edge from="5" to="7"/>
+			<edge from="9" to="16"/>
+			<edge from="4" to="17"/>
+			<edge from="27" to="18"/>
+			<edge from="11" to="19"/>
+			<edge from="26" to="20"/>
+			<edge from="13" to="21"/>
+			<edge from="8" to="22"/>
+			<edge from="15" to="23"/>
+			<edge from="12" to="24"/>
+			<edge from="28" to="25"/>
+		</connections>
+	</component>
+</mapping>
