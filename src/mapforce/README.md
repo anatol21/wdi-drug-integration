@@ -25,9 +25,11 @@ src/mapforce/
 └── helpers/
     ├── README.md               # Detailed UDF documentation & wiring diagrams
     ├── wdi_helpers.mfd         # Altova MapForce UDF library for Built-in execution
+    ├── wdi_helpers.mfd         # Altova MapForce UDF library for Built-in execution
+    ├── build_helpers_mfd.py    # Generator & simulator for wdi_helpers.mfd
     ├── wdi_helpers.xslt        # Reusable XSLT 3.0 / 2.0 helper function library
     ├── udf_reference.py        # Python test oracle & dataset coverage audit
-    └── udf_test_cases.csv      # 92 unit tests covering all functions and edge cases
+    └── udf_test_cases.csv      # 107 unit tests covering all functions and edge cases
 ```
 
 ---

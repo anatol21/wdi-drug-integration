@@ -8,10 +8,11 @@ This directory provides reusable helper functions and lookup tables to standardi
 
 | File | Purpose |
 | :--- | :--- |
-| [`wdi_helpers.mfd`](file:///Users/gabrielhimmelein/Projects/wdi-drug-integration/src/mapforce/helpers/wdi_helpers.mfd) | Altova MapForce User-Defined Function (UDF) library for the **Built-in** execution engine. |
+| [`wdi_helpers.mfd`](file:///Users/gabrielhimmelein/Projects/wdi-drug-integration/src/mapforce/helpers/wdi_helpers.mfd) | Altova MapForce User-Defined Function (UDF) library for the **Built-in** execution engine (14 self-contained inlined UDFs with embedded `value-map` lookup tables). |
+| [`build_helpers_mfd.py`](file:///Users/gabrielhimmelein/Projects/wdi-drug-integration/src/mapforce/helpers/build_helpers_mfd.py) | Generator and `.mfd` XML simulator that builds `wdi_helpers.mfd` and verifies all 107 test cases against the actual `.mfd` component graphs. |
 | [`wdi_helpers.xslt`](file:///Users/gabrielhimmelein/Projects/wdi-drug-integration/src/mapforce/helpers/wdi_helpers.xslt) | Companion **XSLT 2.0 / 3.0** library, directly importable via `Component | Import XSLT 2.0 / XQuery Function Library...`. |
-| [`udf_reference.py`](file:///Users/gabrielhimmelein/Projects/wdi-drug-integration/src/mapforce/helpers/udf_reference.py) | Python reference implementation and oracle test suite running 92 unit tests and data coverage audits. |
-| [`udf_test_cases.csv`](file:///Users/gabrielhimmelein/Projects/wdi-drug-integration/src/mapforce/helpers/udf_test_cases.csv) | Test suite (92 test cases) covering all functions and edge cases across FDA and DPD data. |
+| [`udf_reference.py`](file:///Users/gabrielhimmelein/Projects/wdi-drug-integration/src/mapforce/helpers/udf_reference.py) | Python reference implementation and oracle test suite running 107 unit tests and data coverage audits. |
+| [`udf_test_cases.csv`](file:///Users/gabrielhimmelein/Projects/wdi-drug-integration/src/mapforce/helpers/udf_test_cases.csv) | Test suite (107 test cases) covering all functions and edge cases across FDA, EMA, and DPD data. |
 
 Lookup XML files are located in [`../lookups/`](file:///Users/gabrielhimmelein/Projects/wdi-drug-integration/src/mapforce/lookups/):
 * `regulatory_status.xml`: 25 entries mapping all FDA, EMA, and DPD statuses to 6 harmonized values.
