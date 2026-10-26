@@ -15,7 +15,7 @@
 					<targets>
 						<datapoint pos="0" key="1"/>
 					</targets>
-					<view ltx="337" lty="-84" rbx="402" rby="-67"/>
+					<view ltx="337" lty="-84" rbx="404" rby="-66"/>
 					<data>
 						<constant value="DPD_" datatype="string"/>
 					</data>
@@ -28,13 +28,13 @@
 					<targets>
 						<datapoint pos="0" key="4"/>
 					</targets>
-					<view ltx="453" lty="-83" rbx="528" rby="-27"/>
+					<view ltx="453" lty="-83" rbx="530" rby="-24"/>
 				</component>
 				<component name="constant" library="core" uid="1109" kind="2">
 					<targets>
 						<datapoint pos="0" key="5"/>
 					</targets>
-					<view ltx="406" lty="255" rbx="461" rby="272"/>
+					<view ltx="406" lty="255" rbx="464" rby="273"/>
 					<data>
 						<constant value="Yes" datatype="string"/>
 					</data>
@@ -47,7 +47,112 @@
 					<targets>
 						<datapoint pos="0" key="8"/>
 					</targets>
-					<view ltx="439" lty="186" rbx="491" rby="241"/>
+					<view ltx="439" lty="186" rbx="491" rby="243"/>
+				</component>
+				<component name="medicines" library="xml" uid="2" kind="14">
+					<properties XSLTTargetEncoding="UTF-8" XSLTDefaultOutput="1"/>
+					<view ltx="771" lty="-30" rbx="1276" rby="345"/>
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+									<namespace uid="http://www.altova.com/mapforce"/>
+								</namespaces>
+							</header>
+							<entry name="FileInstance" ns="1" expanded="1">
+								<entry name="document" ns="1" expanded="1" casttotargettypemode="cast-in-subtree">
+									<entry name="medicines" expanded="1">
+										<entry name="medicine" inpkey="16" expanded="1">
+											<entry name="id" inpkey="17"/>
+											<entry name="source" inpkey="18"/>
+											<entry name="brandName" inpkey="19"/>
+											<entry name="activeSubstances" expanded="1">
+												<entry name="activeSubstance" inpkey="20"/>
+											</entry>
+											<entry name="licenceHolder" inpkey="21"/>
+											<entry name="regulatoryStatus" inpkey="29"/>
+											<entry name="productClass" inpkey="30"/>
+											<entry name="atcCode" inpkey="31"/>
+											<entry name="biosimilar" inpkey="22"/>
+											<entry name="caStatusDate" inpkey="23"/>
+										</entry>
+									</entry>
+								</entry>
+							</entry>
+						</root>
+						<document schema="schema\medicines.xsd" instanceroot="{}medicines" outputinstance="schema\medicines.xml"/>
+					</data>
+				</component>
+				<component name="tokenize" library="core" uid="1111" kind="5">
+					<sources>
+						<datapoint pos="0" key="24"/>
+						<datapoint pos="1" key="25"/>
+					</sources>
+					<targets>
+						<datapoint pos="0" key="26"/>
+					</targets>
+					<view ltx="589" lty="86" rbx="677" rby="143"/>
+				</component>
+				<component name="constant" library="core" uid="1103" kind="2">
+					<targets>
+						<datapoint pos="0" key="27"/>
+					</targets>
+					<view ltx="605" lty="-69" rbx="667" rby="-51"/>
+					<data>
+						<constant value="DPD" datatype="string"/>
+					</data>
+				</component>
+				<component name="constant" library="core" uid="1112" kind="2">
+					<targets>
+						<datapoint pos="0" key="28"/>
+					</targets>
+					<view ltx="501" lty="169" rbx="548" rby="187"/>
+					<data>
+						<constant value="; " datatype="string"/>
+					</data>
+				</component>
+				<component name="bestRegulatoryStatus" library="user" uid="104010" kind="19" visible="0">
+					<view ltx="601" lty="253" rbx="694" rby="270"/>
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="raw" inpkey="32" componentid="104001"/>
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="result" outkey="33" componentid="104008"/>
+						</root>
+					</data>
+				</component>
+				<component name="stdProductClass" library="user" uid="105016" kind="19" visible="0">
+					<view ltx="589" lty="169" rbx="682" rby="186"/>
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="raw" inpkey="34" componentid="105001"/>
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="result" outkey="35" componentid="105014"/>
+						</root>
+					</data>
 				</component>
 				<component name="dpd_entities" library="text" uid="3" kind="16">
 					<properties/>
@@ -67,7 +172,10 @@
 										<entry name="brand_name" outkey="11"/>
 										<entry name="active_substances" outkey="12"/>
 										<entry name="licence_holder" outkey="13"/>
+										<entry name="product_class" outkey="36"/>
+										<entry name="atc_code" outkey="37"/>
 										<entry name="biosimilar" outkey="14"/>
+										<entry name="current_status" outkey="38"/>
 										<entry name="status_date" outkey="15"/>
 									</entry>
 								</entry>
@@ -99,64 +207,25 @@
 						</text>
 					</data>
 				</component>
-				<component name="medicines" library="xml" uid="2" kind="14">
-					<properties XSLTTargetEncoding="UTF-8" XSLTDefaultOutput="1"/>
-					<view ltx="771" lty="-30" rbx="1276" rby="345"/>
+				<component name="stdAtcCode" library="user" uid="112030" kind="19" visible="0">
+					<view ltx="561" lty="362" rbx="654" rby="379"/>
 					<data>
 						<root>
 							<header>
 								<namespaces>
 									<namespace/>
-									<namespace uid="http://www.altova.com/mapforce"/>
 								</namespaces>
 							</header>
-							<entry name="FileInstance" ns="1" expanded="1">
-								<entry name="document" ns="1" expanded="1" casttotargettypemode="cast-in-subtree">
-									<entry name="medicines" expanded="1">
-										<entry name="medicine" inpkey="16" expanded="1">
-											<entry name="id" inpkey="17"/>
-											<entry name="source" inpkey="18"/>
-											<entry name="brandName" inpkey="19"/>
-											<entry name="activeSubstances" expanded="1">
-												<entry name="activeSubstance" inpkey="20"/>
-											</entry>
-											<entry name="licenceHolder" inpkey="21"/>
-											<entry name="biosimilar" inpkey="22"/>
-											<entry name="caStatusDate" inpkey="23"/>
-										</entry>
-									</entry>
-								</entry>
-							</entry>
+							<entry name="raw" inpkey="39" componentid="112001"/>
 						</root>
-						<document schema="schema\medicines.xsd" instanceroot="{}medicines" outputinstance="schema\medicines.xml"/>
-					</data>
-				</component>
-				<component name="tokenize" library="core" uid="1111" kind="5">
-					<sources>
-						<datapoint pos="0" key="24"/>
-						<datapoint pos="1" key="25"/>
-					</sources>
-					<targets>
-						<datapoint pos="0" key="26"/>
-					</targets>
-					<view ltx="589" lty="86" rbx="676" rby="141"/>
-				</component>
-				<component name="constant" library="core" uid="1103" kind="2">
-					<targets>
-						<datapoint pos="0" key="27"/>
-					</targets>
-					<view ltx="605" lty="-69" rbx="665" rby="-52"/>
-					<data>
-						<constant value="DPD" datatype="string"/>
-					</data>
-				</component>
-				<component name="constant" library="core" uid="1112" kind="2">
-					<targets>
-						<datapoint pos="0" key="28"/>
-					</targets>
-					<view ltx="501" lty="169" rbx="546" rby="186"/>
-					<data>
-						<constant value="; " datatype="string"/>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="result" outkey="40" componentid="112028"/>
+						</root>
 					</data>
 				</component>
 			</children>
@@ -176,6 +245,12 @@
 			<edge from="15" to="23"/>
 			<edge from="12" to="24"/>
 			<edge from="28" to="25"/>
+			<edge from="33" to="29"/>
+			<edge from="35" to="30"/>
+			<edge from="40" to="31"/>
+			<edge from="38" to="32"/>
+			<edge from="36" to="34"/>
+			<edge from="37" to="39"/>
 		</connections>
 	</component>
 </mapping>

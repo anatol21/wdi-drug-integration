@@ -3416,7 +3416,7 @@
 					</targets>
 					<view ltx="3800" lty="160" rbx="3895" rby="214"/>
 				</component>
-				<component name="concat" library="core" uid="102065" kind="5" growable="3" growablebasename="value">
+				<component name="concat" library="core" uid="102065" kind="5" growable="1" growablebasename="value">
 					<properties/>
 					<sources>
 						<datapoint pos="0" key="146"/>
