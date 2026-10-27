@@ -75,6 +75,20 @@ The target schema represents a **medicine entity** (`brandName` + `activeSubstan
    * `productClass`: `Human`, `Veterinary`, `Disinfectant`
 4. **Dates:** ISO 8601 format (`YYYY-MM-DD`).
 
+### Entity Consolidation Rules (Pre-Mapping Aggregations)
+
+When consolidating multiple source product or application records into a single medicine entity (`brandName` + `activeSubstances`), all sources (Drugs@FDA, Health Canada DPD, EMA) follow these shared aggregation conventions:
+
+| Attribute Group | Target Attribute(s) | Consolidation Policy | Rationale & Resolution Rule |
+| :--- | :--- | :--- | :--- |
+| **Booleans** | `generic`, `biosimilar`, `orphanMedicine` | **Any-positive (Existential)** (`any()`) | `true` if at least one contributing product record is positive (e.g. FDA `ApplType == "ANDA"`, DPD `biosimilar == "Yes"`, EMA `Orphan medicine == "Yes"`). *Unanimity* is rejected because ~375 FDA entities combine innovator NDAs and authorized generic ANDAs under the same brand/substance; unanimity would force `null`/omitting valid data. |
+| **Single-Valued Text** | `licenceHolder` (FDA `SponsorName`, DPD `manufacturer`) | **Plurality Vote (`mode_first`) + Tie-Breaking** | The sponsor/manufacturer with the most contributing product records is chosen. Ties are broken deterministically: select the owner of the record with the highest regulatory status (Authorised/Marketed > Withdrawn/Cancelled), then the most recent status/approval date. |
+| **Status Hierarchy** | `regulatoryStatus` | **Precedence Ranking** (`bestRegulatoryStatus`) | Highest-precedence active status wins: $\text{Authorised} > \text{Suspended} > \text{Pending} > \text{Withdrawn} > \text{Application withdrawn} > \text{Refused}$. |
+| **Product Class** | `productClass` | **Human-Precedence** (`stdProductClass`) | Prioritizes `Human` if both `Human` and `Veterinary`/`Disinfectant` products coexist under the same entity key. |
+| **Multi-Valued Lists** | `dosageForm`, `route` | **Deduplicated Set Union** (`dosageFormList`, `routeList`) | Unique values standardized, deduplicated, sorted alphabetically, and joined with `"; "` (e.g., `"Liquid; Solution"`). |
+| **Strengths** | `strengths` | **Pair Union** (`strengthValue` + `strengthUnit`) | All distinct numeric `(value, unit)` pairs across all contributing products are preserved as repeated `<strength>` elements. |
+| **Dates** | `usApprovalDate`, `euAuthorisationDate`, `caStatusDate` | **Earliest Approval / Latest Active Status** | Approval date takes the earliest approval across contributing records. Status date takes the latest status date among records sharing the highest status rank. |
+
 ---
 
 ## 3. Mapper Plug-in Specifications

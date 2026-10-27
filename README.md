@@ -8,7 +8,7 @@ This repository contains the codebase, data pipeline, and documentation for our 
 3. **Health Canada DPD (`03_ca_health_canada_dpd`):** Canadian Drug Product Database covering marketed, inactive, approved, and dormant drug products (`TXT/CSV`, 12 relational tables linked via `DRUG_CODE`).
 
 ## Project Phases
-* **Phase I: Data Selection and Translation:** Profiling raw data, pre-joining relational tables, handling missing values, and mapping all three sources to a single integrated target schema (`XML`/`JSON`) using Altova MapForce.
+* **Phase I: Data Selection and Translation:** Profiling raw data, consolidating multiple contributing product records into normalized medicine entities using shared aggregation rules (Any-positive booleans, plurality sponsor voting, and hierarchical status resolution — see [`src/mapforce/README.md`](src/mapforce/README.md#entity-consolidation-rules-pre-mapping-aggregations)), and mapping all three sources to the integrated target schema (`medicines.xsd` / `medicines.schema.json`) using Altova MapForce.
 * **Phase II: Identity Resolution:** Identifying overlapping medicines across the three jurisdictions using blocking and similarity measures over `brandName` and `activeSubstances` via the PyDI framework (handling USAN vs. INN nomenclature, biologic suffixes, and salt forms).
 * **Phase III: Data Fusion:** Merging matched records and resolving data conflicts across sources to produce a single, consolidated golden record per medicine.
 
