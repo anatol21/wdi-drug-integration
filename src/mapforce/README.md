@@ -81,7 +81,7 @@ When consolidating multiple source product or application records into a single 
 
 | Attribute Group | Target Attribute(s) | Consolidation Policy | Rationale & Resolution Rule |
 | :--- | :--- | :--- | :--- |
-| **Booleans** | `generic`, `biosimilar`, `orphanMedicine` | **Any-positive (Existential)** (`any()`) | `true` if at least one contributing product record is positive (e.g. FDA `ApplType == "ANDA"`, DPD `biosimilar == "Yes"`, EMA `Orphan medicine == "Yes"`). *Unanimity* is rejected because ~375 FDA entities combine innovator NDAs and authorized generic ANDAs under the same brand/substance; unanimity would force `null`/omitting valid data. |
+| **Booleans** | `generic` (FDA), `biosimilar` (DPD), `orphanMedicine` (EMA) | **Unanimity (FDA `generic`) / Any-positive (DPD `biosimilar`)** | **FDA `generic`:** Uses **Option 2 (Unanimity)**: `true` if all contributing applications are `ANDA`; `false` if all are `NDA`/`BLA`; **omitted** (`null`) if mixed (`NDA` and `ANDA`). The ~375 mixed entities represent authorized generics or co-branded innovator/generic submissions and are intentionally omitted as *Not Missing At Random (NMAR)* since neither boolean value is strictly true. <br>**DPD `biosimilar`:** Uses **Option 1 (Any-positive)**: `true` if any contributing DIN is approved as a biosimilar, since biosimilarity is a regulatory drug-line designation in Canada. |
 | **Single-Valued Text** | `licenceHolder` (FDA `SponsorName`, DPD `manufacturer`) | **Plurality Vote (`mode_first`) + Tie-Breaking** | The sponsor/manufacturer with the most contributing product records is chosen. Ties are broken deterministically: select the owner of the record with the highest regulatory status (Authorised/Marketed > Withdrawn/Cancelled), then the most recent status/approval date. |
 | **Status Hierarchy** | `regulatoryStatus` | **Precedence Ranking** (`bestRegulatoryStatus`) | Highest-precedence active status wins: $\text{Authorised} > \text{Suspended} > \text{Pending} > \text{Withdrawn} > \text{Application withdrawn} > \text{Refused}$. |
 | **Product Class** | `productClass` | **Human-Precedence** (`stdProductClass`) | Prioritizes `Human` if both `Human` and `Veterinary`/`Disinfectant` products coexist under the same entity key. |
@@ -109,7 +109,7 @@ When consolidating multiple source product or application records into a single 
   * `productClass`: `stdProductClass(ApplType)` $\rightarrow$ `"Human"` (or constant `"Human"` if `ApplNo` is missing from `Applications.txt`)
   * `dosageForm`: `dosageFormList(dosage_forms)` (or `stdDosageForm(fdaFormPart(Form))` per product)
   * `route`: `routeList(routes)` (or `stdRoute(fdaRoutePart(Form))` per product; handles both `,` and `;` separators)
-  * `generic`: `equal(ApplType, "ANDA")`
+  * `generic`: Under Option 2 (Unanimity): `true` when all applications are `ANDA`, `false` when all are `NDA`/`BLA`, omitted when mixed. Map directly from consolidated boolean/flag, or via `equal(generic, "true")`.
   * `strengths`: For each token in `tokenize(Strength, ';')`, map `strengthValue` $\rightarrow$ `value` and `strengthUnit` $\rightarrow$ `unit`.
   * `usApprovalDate`: Earliest non-empty `substring(SubmissionStatusDate, 1, 10)` where `SubmissionStatus = "AP"` (note: 8 `AP` rows in `Submissions.txt` have an empty `SubmissionStatusDate`).
 
