@@ -67,12 +67,14 @@ class UdfBuilder:
         )
         return out_k
 
-    def add_output(self, in_from_key: int, name: str = "result", x: int = 920, y: int = 100):
-        uid = self._uid()
+    def add_output(
+        self, in_from_key: int, name: str = "result", x: int = 920, y: int = 100, uid: int | None = None
+    ):
+        comp_uid = uid if uid is not None else self._uid()
         in_k = self._key()
         self.connect(in_from_key, in_k)
         self.children_xml.append(
-            f'\t\t\t\t<component name={quoteattr(name)} library="core" uid="{uid}" kind="7">\n'
+            f'\t\t\t\t<component name={quoteattr(name)} library="core" uid="{comp_uid}" kind="7">\n'
             f'\t\t\t\t\t<properties/>\n'
             f'\t\t\t\t\t<sources>\n'
             f'\t\t\t\t\t\t<datapoint pos="0" key="{in_k}"/>\n'
@@ -462,11 +464,14 @@ def collect_lookup_dictionaries():
         raw_atcs.add(v)
         raw_atcs.add(f"{h};{v}")
         raw_atcs.add(f"{h}; {v}")
+        raw_atcs.add(f"{v};{h}")
+        raw_atcs.add(f"{v}; {h}")
     for t in tests:
         if t["udf"] == "atcCode":
             raw_atcs.add(t["input"])
+    raw_atcs.update(["NOT YET ASSIGNED", "UNASSIGN", "VO4D", "Not yet assigned", "unassign"])
 
-    atc_special_map = {
+    atc_map = {
         "NOT YET ASSIGNED": "__EMPTY__",
         "NOT YET ASSIGNED; NOT YET ASSIGNED": "__EMPTY__",
         "NOT YET ASSIGNED;NOT YET ASSIGNED": "__EMPTY__",
@@ -475,16 +480,13 @@ def collect_lookup_dictionaries():
         "VO4D": "V04D",
     }
     for raw in raw_atcs:
-        s = u.clean_text((raw or "").replace("*", ""))
-        if s.startswith(";"):
-            s = u.clean_text(s[1:])
-        if s.endswith(";"):
-            s = u.clean_text(s[:-1])
-        if not s:
+        ck = u.clean_text(raw)
+        if not ck:
             continue
-        expected = u.std_atc_code(raw) or ""
-        if s != expected:
-            atc_special_map[s] = expected if expected else "__EMPTY__"
+        std = u.std_atc_code(raw)
+        atc_map[ck] = std if std else "__EMPTY__"
+        ck_no_star = ck.replace("*", "")
+        atc_map[ck_no_star] = std if std else "__EMPTY__"
 
     # 6. Strength denominator-q value overrides & unit map
     strength_tokens = set()
@@ -529,7 +531,7 @@ def collect_lookup_dictionaries():
         "dform_list": dform_list_map,
         "route_single": route_single_map,
         "route_list": route_list_map,
-        "atc_special": atc_special_map,
+        "atc": atc_map,
         "strength_q": strength_q_map,
         "unit": unit_map,
     }
@@ -541,6 +543,7 @@ def build_lookup_udf(
     description: str,
     mapping_dict: dict[str, str],
     passthrough_unmapped: bool = True,
+    output_uid: int | None = None,
 ) -> UdfBuilder:
     """Build a lookup UDF:
     raw -> cleanText -> value-map(mapping_dict, default="")
@@ -564,12 +567,12 @@ def build_lookup_udf(
         is_sentinel_k = b.add_func("equal", [cand_k, sentinel_k], library="core", x=720, y=180)
         final_str_k = b.add_if_else(is_sentinel_k, empty_k, cand_k, x=820, y=100)
         filt_k = b.add_filter_non_empty(final_str_k, x=940, y=100)
-        b.add_output(filt_k, "result", x=1060, y=100)
+        b.add_output(filt_k, "result", x=1060, y=100, uid=output_uid)
     else:
         clean_dict = {k: v for k, v in mapping_dict.items() if v and v != "__EMPTY__"}
         vm_k = b.add_valuemap(clean_k, clean_dict, default_value="", x=400, y=100)
         filt_k = b.add_filter_non_empty(vm_k, x=560, y=100)
-        b.add_output(filt_k, "result", x=700, y=100)
+        b.add_output(filt_k, "result", x=700, y=100, uid=output_uid)
     return b
 
 
@@ -764,46 +767,16 @@ def build_all_udfs() -> list[UdfBuilder]:
     udfs.append(b)
 
     # 13. stdAtcCode (uid=1120)
-    b = UdfBuilder(
-        "stdAtcCode",
-        1120,
-        "Standardizes single or semicolon-separated ATC/ATCvet codes, strips '*', fixes 'VO4D'->'V04D', and drops 'Not yet assigned'/'UNASSIGN'.",
-        output_datatype="string",
+    udfs.append(
+        build_lookup_udf(
+            "stdAtcCode",
+            1120,
+            "Standardizes single or semicolon-separated ATC/ATCvet codes, strips '*', fixes 'VO4D'->'V04D', and drops 'Not yet assigned'/'UNASSIGN'.",
+            dicts["atc"],
+            passthrough_unmapped=True,
+            output_uid=112028,
+        )
     )
-    raw_k = b.add_input("raw", "string", x=40, y=100)
-    star_k = b.add_constant("*", x=140, y=160)
-    empty_k = b.add_constant("", x=140, y=190)
-    no_star_k = b.add_func("translate", [raw_k, star_k, empty_k], library="core", x=220, y=100)
-    s0_k = b.add_clean_text(no_star_k, x=340, y=100)
-
-    # Strip leading ";" if present
-    semi_k = b.add_constant(";", x=560, y=180)
-    sw_semi_k = b.add_func("starts-with", [s0_k, semi_k], library="core", x=640, y=60)
-    aft_semi_k = b.add_func("substring-after", [s0_k, semi_k], library="core", x=640, y=130)
-    aft_norm_k = b.add_func("normalize-space", [aft_semi_k], library="core", x=760, y=130)
-    s1_k = b.add_if_else(sw_semi_k, aft_norm_k, s0_k, x=880, y=100)
-
-    # Strip trailing ";" if present
-    at_k = b.add_constant("@", x=980, y=180)
-    semi_at_k = b.add_constant(";@", x=980, y=210)
-    s1_at_k = b.add_func(
-        "concat", [s1_k, at_k], library="core", growable=1, growablebasename="value", x=1060, y=140
-    )
-    ew_semi_k = b.add_func("contains", [s1_at_k, semi_at_k], library="core", x=1180, y=60)
-    bef_semi_k = b.add_func("substring-before", [s1_at_k, semi_at_k], library="core", x=1180, y=140)
-    bef_norm_k = b.add_func("normalize-space", [bef_semi_k], library="core", x=1300, y=140)
-    s2_k = b.add_if_else(ew_semi_k, bef_norm_k, s1_k, x=1420, y=100)
-
-    # Lookup in special ATC value-map; if mapped != "", use mapped, else pass s2_k through
-    vm_k = b.add_valuemap(s2_k, dicts["atc_special"], default_value="", x=1540, y=60)
-    has_map_k = b.add_func("not-equal", [vm_k, empty_k], library="core", x=1660, y=60)
-    cand_k = b.add_if_else(has_map_k, vm_k, s2_k, x=1780, y=100)
-    sentinel_k = b.add_constant("__EMPTY__", x=1780, y=200)
-    is_sentinel_k = b.add_func("equal", [cand_k, sentinel_k], library="core", x=1900, y=160)
-    final_str_k = b.add_if_else(is_sentinel_k, empty_k, cand_k, x=2020, y=100)
-    filt_k = b.add_filter_non_empty(final_str_k, x=2140, y=100)
-    b.add_output(filt_k, "result", x=2260, y=100)
-    udfs.append(b)
 
     # 14. stdUnit (uid=1130)
     udfs.append(
