@@ -14,6 +14,9 @@ strengthValue,0.2055MG/SPRAY,0.2055
 strengthValue,100 %,100
 strengthValue,"400MEQ/100ML (4MEQ/ML)",4
 strengthValue,"9.0708GM/15ML (604.72MG/ML)",0.60472
+strengthValue,650MG,650
+strengthValue,600MG/90MG,600
+strengthValue,100MG/1000MG,100
 strengthUnit,10MG,mg
 strengthUnit,5MG,mg
 strengthUnit,0.05%,%
@@ -29,6 +32,8 @@ strengthUnit,0.2055MG/SPRAY,mg/spray
 strengthUnit,100 %,%
 strengthUnit,"50,000 IU",IU
 strengthUnit,"400MEQ/100ML (4MEQ/ML)",mEq/mL
+strengthUnit,650MG,mg
+strengthUnit,600MG/90MG,mg
 dosageForm,TABLET,Tablet
 dosageForm,"TABLET, EXTENDED RELEASE","Tablet, extended-release"
 dosageForm,CAPSULE,Capsule

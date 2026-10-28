@@ -29,24 +29,32 @@ Lookup XML files are located in [`../lookups/`](file:///Users/gabrielhimmelein/P
 ### 2.1 Strength Splitting
 
 #### `strengthValue(raw: string) -> decimal?`
-* **Purpose:** Extracts the numeric strength value. When an explicit volume/quantity denominator is present (e.g. `25MG/5ML`), normalizes the concentration per single denominator unit ($25 \div 5 = 5$).
+* **Purpose:** Extracts the numeric strength value. When an explicit liquid volume, rate, or dose quantity denominator is present (e.g. `25MG/5ML`), normalizes the concentration per single denominator unit ($25 \div 5 = 5$). Combination products with mass/mass denominators (e.g. `600MG/90MG`) are NOT divided into ratios.
 * **Examples:**
   * `"10MG"` $\rightarrow$ `10`
+  * `"650MG"` $\rightarrow$ `650`
   * `"0.05%"` $\rightarrow$ `0.05`
   * `"25MG/5ML"` $\rightarrow$ `5`
   * `"20,000 UNITS/ML"` $\rightarrow$ `20000`
   * `"80MG/4ML (20MG/ML)"` $\rightarrow$ `20`
   * `"0.6MG/HR **Federal Register..."` $\rightarrow$ `0.6`
+  * `"600MG/90MG"` $\rightarrow$ `600` (fixed-dose combination solid; not divided)
 
 #### `strengthUnit(raw: string) -> string?`
 * **Purpose:** Extracts and normalizes the strength unit using `lookups/strength_unit.xml`.
 * **Examples:**
   * `"10MG"` $\rightarrow$ `"mg"`
+  * `"650MG"` $\rightarrow$ `"mg"`
   * `"0.05%"` $\rightarrow$ `"%"`
   * `"25MG/5ML"` $\rightarrow$ `"mg/mL"`
   * `"20,000 UNITS/ML"` $\rightarrow$ `"U/mL"`
   * `"EQ 2GM BASE/VIAL"` $\rightarrow$ `"g/vial"`
   * `"0.2055MG/SPRAY"` $\rightarrow$ `"mg/spray"`
+  * `"600MG/90MG"` $\rightarrow$ `"mg"` (retains primary mass unit; not "mg/mg")
+
+> [!NOTE]
+> **Implementation Architecture:** Both `strengthValue` and `strengthUnit` use pre-computed `value-map` lookup tables covering all 10,346 distinct strength tokens across EMA, Drugs@FDA, and Health Canada DPD, plus synthesized patterns (1–1000 with units and common decimals). This avoids runtime empty sequence propagation and engine-specific XPath function mismatches in MapForce Built-in.
+> For combination drugs where a slash separates two active ingredient strengths (e.g., FDA `600MG/90MG`), mappers should replace `/` with `;` (`600MG; 90MG`) in pre-consolidation so that `tokenize(..., ';')` creates a separate `<strength>` element for each active substance.
 
 ---
 

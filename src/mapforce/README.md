@@ -110,7 +110,7 @@ When consolidating multiple source product or application records into a single 
   * `dosageForm`: `dosageFormList(dosage_forms)` (or `stdDosageForm(fdaFormPart(Form))` per product)
   * `route`: `routeList(routes)` (or `stdRoute(fdaRoutePart(Form))` per product; handles both `,` and `;` separators)
   * `generic`: Under Option 2 (Unanimity): `true` when all applications are `ANDA`, `false` when all are `NDA`/`BLA`, omitted when mixed. Map directly from consolidated boolean/flag, or via `equal(generic, "true")`.
-  * `strengths`: For each token in `tokenize(Strength, ';')`, map `strengthValue` $\rightarrow$ `value` and `strengthUnit` $\rightarrow$ `unit`.
+  * `strengths`: For each token in `tokenize(Strength, ';')`, map `strengthValue` $\rightarrow$ `value` and `strengthUnit` $\rightarrow$ `unit`. (Note: for the ~37 fixed-dose combination products with slash between masses like `600MG/90MG`, pre-split `/` into `; ` so each active substance strength gets mapped to its own `<strength>` element).
   * `usApprovalDate`: Earliest non-empty `substring(SubmissionStatusDate, 1, 10)` where `SubmissionStatus = "AP"` (note: 8 `AP` rows in `Submissions.txt` have an empty `SubmissionStatusDate`).
 
 ### B. Health Canada DPD Mapper (`dpd_mapping.mfd`)

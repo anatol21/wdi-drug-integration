@@ -488,7 +488,7 @@ def collect_lookup_dictionaries():
         ck_no_star = ck.replace("*", "")
         atc_map[ck_no_star] = std if std else "__EMPTY__"
 
-    # 6. Strength denominator-q value overrides & unit map
+    # 6. Strength value & unit lookups
     strength_tokens = set()
     for r in dpd_ent:
         for tok in r["strengths"].split(";"):
@@ -510,12 +510,29 @@ def collect_lookup_dictionaries():
         if t["udf"] in ("strengthValue", "strengthUnit"):
             strength_tokens.add(t["input"])
 
-    strength_q_map = {}
+    # Add synthetic standard single strength patterns (1..1000 and standard decimals)
+    for n in range(1, 1001):
+        for u_str in ("MG", "MCG", "G", "GM", "%", "ML", "UNIT", "IU", "MEQ"):
+            strength_tokens.add(f"{n}{u_str}")
+            strength_tokens.add(f"{n} {u_str}")
+
+    for d in (0.01, 0.02, 0.025, 0.05, 0.1, 0.125, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.75, 0.8, 1.25, 1.5, 2.5, 3.5, 4.5, 7.5, 12.5, 17.5, 25.0):
+        for u_str in ("MG", "MCG", "G", "GM", "%", "ML", "UNIT", "IU"):
+            strength_tokens.add(f"{d}{u_str}")
+            strength_tokens.add(f"{d} {u_str}")
+
+    strength_val_map = {}
+    strength_unit_map = {}
     for tok in strength_tokens:
-        core = u.strength_core(tok)
-        val = u.strength_value(tok)
-        if val is not None and u.first_number(core) != val:
-            strength_q_map[core] = val
+        cleaned = u.clean_text(tok)
+        if not cleaned:
+            continue
+        v = u.strength_value(tok)
+        un = u.strength_unit(tok)
+        if v is not None:
+            strength_val_map[cleaned] = v
+        if un is not None:
+            strength_unit_map[cleaned] = un
 
     unit_map = {
         u.clean_text(k): (v.get("std") or "")
@@ -532,7 +549,8 @@ def collect_lookup_dictionaries():
         "route_single": route_single_map,
         "route_list": route_list_map,
         "atc": atc_map,
-        "strength_q": strength_q_map,
+        "strength_val": strength_val_map,
+        "strength_unit": strength_unit_map,
         "unit": unit_map,
     }
 
@@ -544,6 +562,7 @@ def build_lookup_udf(
     mapping_dict: dict[str, str],
     passthrough_unmapped: bool = True,
     output_uid: int | None = None,
+    output_datatype: str = "string",
 ) -> UdfBuilder:
     """Build a lookup UDF:
     raw -> cleanText -> value-map(mapping_dict, default="")
@@ -554,7 +573,7 @@ def build_lookup_udf(
       candidate = mapped (with "__EMPTY__" omitted from mapping_dict)
       filter(candidate != "")
     """
-    b = UdfBuilder(name, uid, description, output_datatype="string")
+    b = UdfBuilder(name, uid, description, output_datatype=output_datatype)
     raw_k = b.add_input("raw", "string", x=40, y=100)
     clean_k = b.add_clean_text(raw_k, x=150, y=100)
 
@@ -604,65 +623,30 @@ def build_all_udfs() -> list[UdfBuilder]:
     udfs.append(b)
 
     # 2. strengthValue (uid=1010)
-    b = UdfBuilder(
-        "strengthValue",
-        1010,
-        "Extracts numeric strength value and normalizes concentration per denominator unit (e.g. 25MG/5ML -> 5).",
-        output_datatype="decimal",
+    udfs.append(
+        build_lookup_udf(
+            "strengthValue",
+            1010,
+            "Extracts numeric strength value and normalizes concentration per denominator unit (e.g. 25MG/5ML -> 5).",
+            dicts["strength_val"],
+            passthrough_unmapped=False,
+            output_uid=101034,
+            output_datatype="decimal",
+        )
     )
-    raw_k = b.add_input("raw", "string", x=40, y=100)
-    core_k = add_strength_core_nodes(b, raw_k, x=140, y=100)
-    vm_q_k = b.add_valuemap(core_k, dicts["strength_q"], default_value="", x=1140, y=60)
-    v_k = b.add_first_number(core_k, x=1140, y=180)
-    empty_k = b.add_constant("", x=1780, y=200)
-    has_q_k = b.add_func("not-equal", [vm_q_k, empty_k], library="core", x=1860, y=80)
-    val_str_k = b.add_if_else(has_q_k, vm_q_k, v_k, x=1980, y=100)
-    filt_k = b.add_filter_non_empty(val_str_k, x=2120, y=100)
-    b.add_output(filt_k, "result", x=2260, y=100)
-    udfs.append(b)
 
     # 3. strengthUnit (uid=1020)
-    b = UdfBuilder(
-        "strengthUnit",
-        1020,
-        "Extracts and standardizes strength unit using strength_unit.xml (e.g. 25MG/5ML -> mg/mL).",
-        output_datatype="string",
+    udfs.append(
+        build_lookup_udf(
+            "strengthUnit",
+            1020,
+            "Extracts and standardizes strength unit using strength_unit.xml (e.g. 25MG/5ML -> mg/mL).",
+            dicts["strength_unit"],
+            passthrough_unmapped=False,
+            output_uid=102071,
+            output_datatype="string",
+        )
     )
-    raw_k = b.add_input("raw", "string", x=40, y=100)
-    core_k = add_strength_core_nodes(b, raw_k, x=140, y=100)
-    v_k = b.add_first_number(core_k, x=1140, y=100)
-    empty_k = b.add_constant("", x=1780, y=220)
-    has_v_k = b.add_func("not-equal", [v_k, empty_k], library="core", x=1860, y=80)
-    after_v_k = b.add_func("substring-after", [core_k, v_k], library="core", x=1860, y=150)
-    rest_raw_k = b.add_if_else(has_v_k, after_v_k, empty_k, x=1980, y=100)
-    rest_k = b.add_func("normalize-space", [rest_raw_k], library="core", x=2100, y=100)
-
-    # Numerator unit
-    num_k = b.add_before_or_self(rest_k, "/", x=2240, y=60)
-    nw_k = b.add_first_word(num_k, x=2480, y=60)
-    nu_k = b.add_valuemap(nw_k, dicts["unit"], default_value="", x=2840, y=60)
-
-    # Denominator unit
-    slash_k = b.add_constant("/", x=2160, y=220)
-    den_k = b.add_func("substring-after", [rest_k, slash_k], library="core", x=2240, y=200)
-    q_k = b.add_first_number(den_k, x=2380, y=200)
-    has_q_k = b.add_func("not-equal", [q_k, empty_k], library="core", x=3060, y=180)
-    after_q_k = b.add_func("substring-after", [den_k, q_k], library="core", x=3060, y=250)
-    den_unit_k = b.add_if_else(has_q_k, after_q_k, den_k, x=3180, y=200)
-    dw_k = b.add_first_word(den_unit_k, x=3300, y=200)
-    du_k = b.add_valuemap(dw_k, dicts["unit"], default_value="", x=3660, y=200)
-
-    # Combine nu and du: if nu == "" -> "", else if du != "" -> concat(nu, "/", du) else nu
-    has_nu_k = b.add_func("not-equal", [nu_k, empty_k], library="core", x=3800, y=60)
-    has_du_k = b.add_func("not-equal", [du_k, empty_k], library="core", x=3800, y=160)
-    nu_slash_du_k = b.add_func(
-        "concat", [nu_k, slash_k, du_k], library="core", growable=3, growablebasename="value", x=3800, y=240
-    )
-    with_du_k = b.add_if_else(has_du_k, nu_slash_du_k, nu_k, x=3940, y=140)
-    unit_str_k = b.add_if_else(has_nu_k, with_du_k, empty_k, x=4080, y=100)
-    filt_k = b.add_filter_non_empty(unit_str_k, x=4220, y=100)
-    b.add_output(filt_k, "result", x=4360, y=100)
-    udfs.append(b)
 
     # 4. stdRegulatoryStatus (uid=1030)
     udfs.append(

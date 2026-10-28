@@ -3,7 +3,7 @@
 <mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="35">
 	<settings>
 		<libraries>
-			<import path="helpers\wdi_helpers_fixed.mfd" saverelative="1"/>
+			<import path="helpers\wdi_helpers.mfd" saverelative="1"/>
 		</libraries>
 	</settings>
 	<resources/>

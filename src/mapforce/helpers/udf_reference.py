@@ -199,6 +199,12 @@ def strength_core(raw):
     return _normalize_space(s)
 
 
+MASS_UNITS = {
+    "mg", "g", "mcg", "kg", "mEq", "U", "IU", "Ci", "mCi", "mcCi", "mmol", "mcmol", "ng",
+    "MG", "GM", "MCG", "UG", "G", "KG", "MEQ", "UNITS", "UNIT", "IU", "MCI", "UCI", "MMOL", "MCMOL", "NG",
+}
+
+
 def _parts(raw):
     core = strength_core(raw)
     v = first_number(core)
@@ -215,14 +221,19 @@ def _parts(raw):
 def strength_value(raw):
     """UDF strengthValue(raw) -> xs:decimal or nothing
     v = firstNumber(core);  q = firstNumber(substring-after(substring-after(core, v), '/'))
-    result = if (exists(q) and q > 0) round-precision(v div q, 6) else v
+    result = if (exists(q) and q > 0 and not is_mass_combo) round-precision(v div q, 6) else v
     """
     p = _parts(raw)
     if p is None:
         return None
-    v, _, q, _ = p
+    v, numerator, q, den_unit = p
     value = Decimal(v)
-    if q is not None and Decimal(q) > 0:
+    nu_word = first_word(numerator) if numerator else ""
+    du_word = first_word(den_unit) if den_unit else ""
+    nu = std_unit(nu_word) or ""
+    du = std_unit(du_word) or ""
+    is_mass_combo = (nu in MASS_UNITS and du in MASS_UNITS) or (nu_word in MASS_UNITS and du_word in MASS_UNITS)
+    if q is not None and Decimal(q) > 0 and not is_mass_combo:
         value = round(value / Decimal(q), 6)
     value = value.normalize()
     return format(value, "f")
@@ -232,16 +243,21 @@ def strength_unit(raw):
     """UDF strengthUnit(raw) -> standardised unit or nothing
     nu = stdUnit(firstWord(numerator))            'MG BASE' -> MG -> mg
     du = stdUnit(firstWord(denominator unit))     '10ML' -> ML -> mL ; 'VIAL' -> vial
-    result = nu, or concat(nu, '/', du) when du exists
+    result = nu (for single/mass combo) or concat(nu, '/', du) when du exists and is volume/time/dose
     """
     p = _parts(raw)
     if p is None:
         return None
     _, numerator, _, den_unit = p
-    nu = std_unit(first_word(numerator)) if first_word(numerator) else None
+    nu_word = first_word(numerator) if numerator else ""
+    du_word = first_word(den_unit) if den_unit else ""
+    nu = std_unit(nu_word) if nu_word else None
     if not nu:
         return None
-    du = std_unit(first_word(den_unit)) if first_word(den_unit) else None
+    du = std_unit(du_word) if du_word else None
+    is_mass_combo = (nu in MASS_UNITS and du in MASS_UNITS) or (nu_word in MASS_UNITS and du_word in MASS_UNITS)
+    if is_mass_combo:
+        return nu
     return f"{nu}/{du}" if du else nu
 
 
