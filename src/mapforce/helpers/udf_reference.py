@@ -207,9 +207,16 @@ MASS_UNITS = {
 
 def _parts(raw):
     core = strength_core(raw)
-    v = first_number(core)
+    numerator_raw = before_or_self(core, "/")
+    # Detect unsupported ranges in numerator (e.g. 185–259 MBq, 185MBQ to 259MBQ, 0.25-3 CI/GENERATOR)
+    if re.search(r"\d+([.,]\d+)?\s*[A-Za-z%]*\s*(?:to|[-–—])\s*\d+([.,]\d+)?", numerator_raw, re.I):
+        return None
+
+    # Extract number strictly from numerator (prevents extracting denominator from N/A/1000ML)
+    v = first_number(numerator_raw)
     if v is None:
         return None
+
     rest = _normalize_space(_after(core, v))
     numerator = before_or_self(rest, "/")
     denominator = _after(rest, "/")
@@ -220,8 +227,8 @@ def _parts(raw):
 
 def strength_value(raw):
     """UDF strengthValue(raw) -> xs:decimal or nothing
-    v = firstNumber(core);  q = firstNumber(substring-after(substring-after(core, v), '/'))
-    result = if (exists(q) and q > 0 and not is_mass_combo) round-precision(v div q, 6) else v
+    Extracts numeric strength value and normalizes liquid concentrations per denominator unit
+    (e.g. 25MG/5ML -> 5, 10MG/GM -> 10). Does NOT divide combination products (e.g. 600MG/90MG -> 600).
     """
     p = _parts(raw)
     if p is None:
@@ -230,10 +237,12 @@ def strength_value(raw):
     value = Decimal(v)
     nu_word = first_word(numerator) if numerator else ""
     du_word = first_word(den_unit) if den_unit else ""
-    nu = std_unit(nu_word) or ""
-    du = std_unit(du_word) or ""
-    is_mass_combo = (nu in MASS_UNITS and du in MASS_UNITS) or (nu_word in MASS_UNITS and du_word in MASS_UNITS)
-    if q is not None and Decimal(q) > 0 and not is_mass_combo:
+    nu = std_unit(nu_word) or nu_word.lower()
+    du = std_unit(du_word) or (du_word.lower() if du_word else "")
+    # Combination products have identical dose unit (e.g. 600MG/90MG -> nu == du == 'mg')
+    # with an explicit denominator quantity q. Do NOT divide them.
+    is_combo_ratio = (nu == du and q is not None and nu in MASS_UNITS)
+    if q is not None and Decimal(q) > 0 and not is_combo_ratio:
         value = round(value / Decimal(q), 6)
     value = value.normalize()
     return format(value, "f")
@@ -241,22 +250,24 @@ def strength_value(raw):
 
 def strength_unit(raw):
     """UDF strengthUnit(raw) -> standardised unit or nothing
-    nu = stdUnit(firstWord(numerator))            'MG BASE' -> MG -> mg
-    du = stdUnit(firstWord(denominator unit))     '10ML' -> ML -> mL ; 'VIAL' -> vial
-    result = nu (for single/mass combo) or concat(nu, '/', du) when du exists and is volume/time/dose
+    Extracts and standardizes strength unit using strength_unit.xml.
+    Liquid concentrations: 25MG/5ML -> mg/mL.
+    Mass concentrations: 10MG/GM -> mg/g.
+    Solid combinations: 600MG/90MG -> mg (not mg/mg).
+    Special device/unit denominators: 12.7MG/FIBER -> mg/fiber.
     """
     p = _parts(raw)
     if p is None:
         return None
-    _, numerator, _, den_unit = p
+    _, numerator, q, den_unit = p
     nu_word = first_word(numerator) if numerator else ""
     du_word = first_word(den_unit) if den_unit else ""
-    nu = std_unit(nu_word) if nu_word else None
+    nu = std_unit(nu_word) or (nu_word.lower() if nu_word else None)
     if not nu:
         return None
-    du = std_unit(du_word) if du_word else None
-    is_mass_combo = (nu in MASS_UNITS and du in MASS_UNITS) or (nu_word in MASS_UNITS and du_word in MASS_UNITS)
-    if is_mass_combo:
+    du = std_unit(du_word) or (du_word.lower() if du_word else None)
+    is_combo_ratio = (nu == du and q is not None and nu in MASS_UNITS)
+    if is_combo_ratio:
         return nu
     return f"{nu}/{du}" if du else nu
 

@@ -266,51 +266,57 @@
     <xsl:function name="wdi:strengthValue" as="xs:decimal?">
         <xsl:param name="raw" as="xs:string?"/>
         <xsl:variable name="core" select="wdi:strengthCore($raw)"/>
-        <xsl:variable name="v" select="wdi:firstNumber($core)"/>
-        <xsl:if test="exists($v)">
-            <xsl:variable name="rest" select="normalize-space(substring-after($core, $v))"/>
-            <xsl:variable name="numerator" select="wdi:beforeOrSelf($rest, '/')"/>
-            <xsl:variable name="denominator" select="substring-after($rest, '/')"/>
-            <xsl:variable name="q" select="wdi:firstNumber($denominator)"/>
-            <xsl:variable name="denUnit" select="if (exists($q)) then substring-after($denominator, $q) else $denominator"/>
-            <xsl:variable name="nu" select="wdi:stdUnit(wdi:firstWord($numerator))"/>
-            <xsl:variable name="du" select="wdi:stdUnit(wdi:firstWord($denUnit))"/>
-            <xsl:variable name="isMassCombo" select="($nu = ('mg', 'g', 'mcg', 'kg', 'mEq', 'U', 'IU')) and ($du = ('mg', 'g', 'mcg', 'kg', 'mEq', 'U', 'IU'))"/>
-            <xsl:choose>
-                <xsl:when test="exists($q) and xs:decimal($q) &gt; 0 and not($isMassCombo)">
-                    <xsl:sequence select="round((xs:decimal($v) div xs:decimal($q)) * 1000000) div 1000000"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:sequence select="xs:decimal($v)"/>
-                </xsl:otherwise>
-            </xsl:choose>
+        <xsl:variable name="numRaw" select="wdi:beforeOrSelf($core, '/')"/>
+        <xsl:if test="not(matches($numRaw, '\d+([.,]\d+)?\s*[A-Za-z%]*\s*(to|[-–—])\s*\d+([.,]\d+)?', 'i'))">
+            <xsl:variable name="v" select="wdi:firstNumber($numRaw)"/>
+            <xsl:if test="exists($v)">
+                <xsl:variable name="rest" select="normalize-space(substring-after($core, $v))"/>
+                <xsl:variable name="numerator" select="wdi:beforeOrSelf($rest, '/')"/>
+                <xsl:variable name="denominator" select="substring-after($rest, '/')"/>
+                <xsl:variable name="q" select="wdi:firstNumber($denominator)"/>
+                <xsl:variable name="denUnit" select="if (exists($q)) then substring-after($denominator, $q) else $denominator"/>
+                <xsl:variable name="nu" select="wdi:stdUnit(wdi:firstWord($numerator))"/>
+                <xsl:variable name="du" select="wdi:stdUnit(wdi:firstWord($denUnit))"/>
+                <xsl:variable name="isComboRatio" select="($nu = $du) and exists($q) and ($nu = ('mg', 'g', 'mcg', 'kg', 'mEq', 'U', 'IU'))"/>
+                <xsl:choose>
+                    <xsl:when test="exists($q) and xs:decimal($q) &gt; 0 and not($isComboRatio)">
+                        <xsl:sequence select="round((xs:decimal($v) div xs:decimal($q)) * 1000000) div 1000000"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:sequence select="xs:decimal($v)"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:if>
         </xsl:if>
     </xsl:function>
 
     <xsl:function name="wdi:strengthUnit" as="xs:string?">
         <xsl:param name="raw" as="xs:string?"/>
         <xsl:variable name="core" select="wdi:strengthCore($raw)"/>
-        <xsl:variable name="v" select="wdi:firstNumber($core)"/>
-        <xsl:if test="exists($v)">
-            <xsl:variable name="rest" select="normalize-space(substring-after($core, $v))"/>
-            <xsl:variable name="numerator" select="wdi:beforeOrSelf($rest, '/')"/>
-            <xsl:variable name="denominator" select="substring-after($rest, '/')"/>
-            <xsl:variable name="q" select="wdi:firstNumber($denominator)"/>
-            <xsl:variable name="denUnit" select="if (exists($q)) then substring-after($denominator, $q) else $denominator"/>
-            <xsl:variable name="nu" select="wdi:stdUnit(wdi:firstWord($numerator))"/>
-            <xsl:variable name="du" select="wdi:stdUnit(wdi:firstWord($denUnit))"/>
-            <xsl:variable name="isMassCombo" select="($nu = ('mg', 'g', 'mcg', 'kg', 'mEq', 'U', 'IU')) and ($du = ('mg', 'g', 'mcg', 'kg', 'mEq', 'U', 'IU'))"/>
-            <xsl:choose>
-                <xsl:when test="exists($nu) and exists($du) and not($isMassCombo)">
-                    <xsl:sequence select="concat($nu, '/', $du)"/>
-                </xsl:when>
-                <xsl:when test="exists($nu)">
-                    <xsl:sequence select="$nu"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:sequence select="()"/>
-                </xsl:otherwise>
-            </xsl:choose>
+        <xsl:variable name="numRaw" select="wdi:beforeOrSelf($core, '/')"/>
+        <xsl:if test="not(matches($numRaw, '\d+([.,]\d+)?\s*[A-Za-z%]*\s*(to|[-–—])\s*\d+([.,]\d+)?', 'i'))">
+            <xsl:variable name="v" select="wdi:firstNumber($numRaw)"/>
+            <xsl:if test="exists($v)">
+                <xsl:variable name="rest" select="normalize-space(substring-after($core, $v))"/>
+                <xsl:variable name="numerator" select="wdi:beforeOrSelf($rest, '/')"/>
+                <xsl:variable name="denominator" select="substring-after($rest, '/')"/>
+                <xsl:variable name="q" select="wdi:firstNumber($denominator)"/>
+                <xsl:variable name="denUnit" select="if (exists($q)) then substring-after($denominator, $q) else $denominator"/>
+                <xsl:variable name="nu" select="wdi:stdUnit(wdi:firstWord($numerator))"/>
+                <xsl:variable name="du" select="if (wdi:stdUnit(wdi:firstWord($denUnit))) then wdi:stdUnit(wdi:firstWord($denUnit)) else lower-case(wdi:firstWord($denUnit))"/>
+                <xsl:variable name="isComboRatio" select="($nu = $du) and exists($q) and ($nu = ('mg', 'g', 'mcg', 'kg', 'mEq', 'U', 'IU'))"/>
+                <xsl:choose>
+                    <xsl:when test="exists($nu) and string-length($du) &gt; 0 and not($isComboRatio)">
+                        <xsl:sequence select="concat($nu, '/', $du)"/>
+                    </xsl:when>
+                    <xsl:when test="exists($nu)">
+                        <xsl:sequence select="$nu"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:sequence select="()"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:if>
         </xsl:if>
     </xsl:function>
 

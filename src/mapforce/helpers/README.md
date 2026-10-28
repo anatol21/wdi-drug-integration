@@ -29,16 +29,21 @@ Lookup XML files are located in [`../lookups/`](file:///Users/gabrielhimmelein/P
 ### 2.1 Strength Splitting
 
 #### `strengthValue(raw: string) -> decimal?`
-* **Purpose:** Extracts the numeric strength value. When an explicit liquid volume, rate, or dose quantity denominator is present (e.g. `25MG/5ML`), normalizes the concentration per single denominator unit ($25 \div 5 = 5$). Combination products with mass/mass denominators (e.g. `600MG/90MG`) are NOT divided into ratios.
+* **Purpose:** Extracts the numeric strength value. When an explicit liquid volume, rate, or dose quantity denominator is present (e.g. `25MG/5ML`), normalizes the concentration per single denominator unit ($25 \div 5 = 5$). Mass concentrations (e.g. `10MG/GM`) retain their numeric numerator (`10`). Combination products sharing the same dose unit (e.g. `600MG/90MG`) are NOT divided into ratios. Unsupported numeric ranges (e.g. `185–259 MBq`, `0.25-3 CI/GENERATOR`) and missing numerators (e.g. `N/A/1000ML`) are omitted to prevent data corruption.
 * **Examples:**
   * `"10MG"` $\rightarrow$ `10`
   * `"650MG"` $\rightarrow$ `650`
   * `"0.05%"` $\rightarrow$ `0.05`
   * `"25MG/5ML"` $\rightarrow$ `5`
+  * `"10MG/GM"` $\rightarrow$ `10`
+  * `"12.7MG/FIBER"` $\rightarrow$ `12.7`
+  * `"75 CU/vial"` $\rightarrow$ `75`
   * `"20,000 UNITS/ML"` $\rightarrow$ `20000`
   * `"80MG/4ML (20MG/ML)"` $\rightarrow$ `20`
   * `"0.6MG/HR **Federal Register..."` $\rightarrow$ `0.6`
   * `"600MG/90MG"` $\rightarrow$ `600` (fixed-dose combination solid; not divided)
+  * `"185–259 MBq"` $\rightarrow$ `()` (unsupported range; omitted)
+  * `"N/A/1000ML"` $\rightarrow$ `()` (missing numerator; omitted)
 
 #### `strengthUnit(raw: string) -> string?`
 * **Purpose:** Extracts and normalizes the strength unit using `lookups/strength_unit.xml`.
@@ -47,6 +52,9 @@ Lookup XML files are located in [`../lookups/`](file:///Users/gabrielhimmelein/P
   * `"650MG"` $\rightarrow$ `"mg"`
   * `"0.05%"` $\rightarrow$ `"%"`
   * `"25MG/5ML"` $\rightarrow$ `"mg/mL"`
+  * `"10MG/GM"` $\rightarrow$ `"mg/g"`
+  * `"12.7MG/FIBER"` $\rightarrow$ `"mg/fiber"`
+  * `"75 CU/vial"` $\rightarrow$ `"CU/vial"` (Clinical Units; not Curie)
   * `"20,000 UNITS/ML"` $\rightarrow$ `"U/mL"`
   * `"EQ 2GM BASE/VIAL"` $\rightarrow$ `"g/vial"`
   * `"0.2055MG/SPRAY"` $\rightarrow$ `"mg/spray"`

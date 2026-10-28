@@ -64,7 +64,7 @@
   <entry raw="BOT" std="bottle"/>
   <entry raw="BVG" std="vg"/>
   <entry raw="C" std="C"/>
-  <entry raw="CARTRIDGE" std=""/>
+  <entry raw="CARTRIDGE" std="cartridge"/>
   <entry raw="CCID50" std="CCID50"/>
   <entry raw="CELLS" std="cells"/>
   <entry raw="CFU" std="CFU"/>
@@ -73,7 +73,7 @@
   <entry raw="CMK" std="CMK"/>
   <entry raw="COPPER" std=""/>
   <entry raw="CSR" std="CSR U"/>
-  <entry raw="CU" std="Ci"/>
+  <entry raw="CU" std="CU"/>
   <entry raw="CYLINDER" std="cylinder"/>
   <entry raw="D" std="D"/>
   <entry raw="DAY" std="day"/>
@@ -81,7 +81,7 @@
   <entry raw="DH" std="DH"/>
   <entry raw="DOSE" std="dose"/>
   <entry raw="FFU" std="FFU"/>
-  <entry raw="FIBER" std=""/>
+  <entry raw="FIBER" std="fiber"/>
   <entry raw="G" std="g"/>
   <entry raw="GAL" std="GAL"/>
   <entry raw="GALU" std="GALU"/>
@@ -92,7 +92,7 @@
   <entry raw="GM/BOT17.5GM/BOTN/AN/AN/AN/A" std=""/>
   <entry raw="GM0.74GM2.86GM5.6GM" std=""/>
   <entry raw="GMBASE" std="g"/>
-  <entry raw="GRAM" std=""/>
+  <entry raw="GRAM" std="g"/>
   <entry raw="HR" std="h"/>
   <entry raw="IMPLANT" std="implant"/>
   <entry raw="INH" std="actuation"/>
@@ -175,7 +175,7 @@
   <entry raw="PACKET" std="packet"/>
   <entry raw="PATCH" std="patch"/>
   <entry raw="PFU" std="PFU"/>
-  <entry raw="POUCH" std=""/>
+  <entry raw="POUCH" std="pouch"/>
   <entry raw="PPM" std="ppm"/>
   <entry raw="PRESSOR" std="U"/>
   <entry raw="SCOOPFUL" std="scoop"/>
