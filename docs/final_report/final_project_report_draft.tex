@@ -1,0 +1,408 @@
+% Do not change document class, margins, fonts, etc.
+\documentclass[a4paper,oneside,bibliography=totoc]{scrbook}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\counterwithin{algorithm}{chapter}
+\usepackage{algorithmic}
+\usepackage{csquotes}
+\renewcommand{\algorithmiccomment}[1]{\hfill\textit{// #1}}
+\usepackage[usenames,dvipsnames,table]{xcolor}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{xurl}
+\usepackage[colorlinks,citecolor=Green]{hyperref}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash\hspace{0pt}}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\definecolor{TableHeader}{RGB}{0,51,102}
+\definecolor{LightTable}{RGB}{235,241,248}
+\definecolor{Missing}{RGB}{192,0,0}
+\newcommand{\tablegroup}[1]{\textbf{#1}\ }
+\setlength{\emergencystretch}{3em}
+\newcommand{\miss}[1]{#1\textsuperscript{\textcolor{Missing}{**}}}
+\usepackage{lipsum}
+
+
+\usepackage{natbib}
+\bibliographystyle{chicagoa}
+\setcitestyle{authoryear,round,semicolon,aysep={},yysep={,}} \let\cite\citep
+
+
+\newtheorem{definition}{Definition} \newtheorem{proposition}{Proposition}
+
+\begin{document}
+
+
+\makeatletter
+\renewcommand\thesection{\arabic{section}}
+\renewcommand\thesubsection{\arabic{section}.\arabic{subsection}}
+\renewcommand\thesubsubsection{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}
+\makeatother
+
+\subject{Web Data Integration \\ Final Report}
+\title{Pharmaceutical Drug Integration: Linking US, EU and Canadian Approval Data}
+\author{
+  Gabriel Himmelein (1649181)\\
+  Özlem Ölçer (2265825)\\
+  Anatole Lobenko (2187322)\\
+  Hai Nguyen (2267317)\\
+  Thu Huyen Trang Trinh (2111810)
+} \date{October 29, 2026}
+\publishers{{\small Submitted to}\\
+  Data and Web Science Group\\
+  Dr. Ralph Peeters\\
+  Prof. Dr. Christian Bizer\\
+  University of Mannheim\\}
+\maketitle
+
+% ============================================================
+\section{Use Case}
+% ============================================================
+
+This project builds a unified view of approved pharmaceutical drugs across the United States, European Union, and Canada by integrating three official regulatory datasets: Drugs@FDA (US), EMA Medicines (EU), and the Health Canada Drug Product Database (DPD). The central entity is a medicine identified by its brand name and active substance(s); each integrated record includes licence holder, regulatory status, product class, ATC code, dosage form, route, strengths, substance count, regional dates, and generic/biosimilar/orphan flags.
+
+% ============================================================
+\section{Requirements Suitability}
+% ============================================================
+
+\subsection{Schema and basic profile}
+
+\begin{table}[htbp]
+\centering
+\caption{Overview of the input datasets}
+\label{tab:datasets}
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{|l|l|l|r|r|r|}
+\hline
+\textbf{Dataset} & \textbf{Source} & \textbf{Format} & \textbf{Rows} & \textbf{Entities} & \textbf{Attr.} \\
+\hline
+Drugs@FDA  & U.S. FDA    & TXT/TSV  & 51,839 &  8,175 & 56 \\
+EMA Med.   & EMA         & XLSX/CSV &  2,746 &  2,620 & 39 \\
+DPD        & Health Can. & TXT/CSV  & 42,042 & 41,636 & 87 \\
+\hline
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:datasets} summarises the three input datasets. Drugs@FDA contains 51,839 product rows forming 8,175 entities across 29,377 applications (78.3\% ANDAs). EMA Medicines contains 2,746 rows forming 2,620 entities, predominantly human medicines (85.6\%). The Health Canada DPD contains 58,137 product records consolidated into 41,636 entities. High missingness in all three datasets is largely structural: optional fields, category-specific attributes, or regulatory-event dates that apply only to specific statuses.
+
+\subsection{Integrated schema and overlap with input schemata}
+
+The integrated schema contains 16 attributes (Table~\ref{tab:schema}); eleven occur in at
+least two sources. \texttt{activeSubstances} and \texttt{strengths} are list-valued, while
+the remaining 14 attributes are single-valued (including the numeric attribute
+\texttt{activeSubstanceCount}). Strengths are represented as numeric value--unit pairs.
+
+\begin{table}[htbp]
+\centering
+\caption{Attribute Intersection with Integrated Schema}
+\label{tab:schema}
+\scriptsize
+\begin{tabular}{|l|l|>{\raggedright\arraybackslash}p{5.5cm}|}
+\hline
+\textbf{Attribute name} & \textbf{Attribute type} & \textbf{Datasets in which the attribute is found} \\
+\hline
+\texttt{brandName} & string & Drugs@FDA, EMA Medicines, DPD \\
+\texttt{activeSubstances} & list (string) & Drugs@FDA, EMA Medicines, DPD \\
+\texttt{activeSubstanceCount} & numeric (integer) & Drugs@FDA (derived), EMA Medicines (derived), DPD \\
+\texttt{licenceHolder} & string & Drugs@FDA, EMA Medicines, DPD \\
+\texttt{regulatoryStatus} & string (categorical) & Drugs@FDA, EMA Medicines, DPD \\
+\texttt{productClass} & string (categorical) & Drugs@FDA (derived), EMA Medicines, DPD \\
+\texttt{atcCode} & string & EMA Medicines, DPD \\
+\texttt{generic} & boolean & Drugs@FDA (derived), EMA Medicines \\
+\texttt{biosimilar} & boolean & EMA Medicines \\
+\texttt{orphanMedicine} & boolean & EMA Medicines \\
+\texttt{dosageForm} & string & Drugs@FDA, DPD \\
+\texttt{route} & string & Drugs@FDA, DPD \\
+\texttt{strengths} & list (numeric value, unit) & Drugs@FDA, DPD \\
+\texttt{usApprovalDate} & date & Drugs@FDA \\
+\texttt{euAuthorisationDate} & date & EMA Medicines \\
+\texttt{caStatusDate} & date & DPD \\
+\hline
+\end{tabular}
+\end{table}
+
+% ============================================================
+\subsection{Entity Identification and Count Requirement}
+% ============================================================
+
+A medicine is identified by its \texttt{brandName} and \texttt{activeSubstances}. Contrary
+to initial assumptions, \texttt{licenceHolder} cannot be used as an identifying attribute
+because the same medicine is frequently marketed by different regional subsidiaries or
+unrelated licensing partners across jurisdictions (for example, \textit{Verkazia} is held
+by \texttt{HARROW EYE} in the US, \texttt{Santen Oy} in the EU, and \texttt{APOTEX INC} in
+Canada).
+
+To estimate how many medicines appear in multiple datasets based on exact matching, we build
+a normalized key (\texttt{medicine\_id}) from \texttt{brandName} and \texttt{activeSubstances}
+by converting text to upper case, removing accents and dosage strengths, standardizing
+punctuation, and sorting multiple active substances. Let $F$, $E$ and $D$ denote the sets of
+\texttt{medicine\_id} values in Drugs@FDA, EMA Medicines and the DPD. The pairwise exact
+overlaps are $|F \cap E| = 428$, $|F \cap D| = 949$ and $|E \cap D| = 594$, yielding a
+deduplicated union of $\left|(F \cap E) \cup (F \cap D) \cup (E \cap D)\right| = 1{,}407$
+distinct medicines -- well above the required minimum of 1,000.
+
+However, exact matching misses many identical medicines because both identifying attributes
+can vary across countries (Table~\ref{tab:difficult_match}):
+\begin{itemize}
+  \item \textbf{Active substance naming and salt forms:} The same substance can have different
+  regional spellings (e.g., \texttt{CYCLOSPORINE} in the US and Canada vs.\
+  \texttt{ciclosporin} in the EU for \textit{Verkazia}) or different chemical and salt
+  representations (e.g., \texttt{GLYCOPYRROLATE} in the US, \texttt{glycopyrronium bromide}
+  in the EU, and \texttt{GLYCOPYRRONIUM (GLYCOPYRRONIUM BROMIDE)} in Canada for
+  \textit{Seebri}).
+  \item \textbf{Brand name suffixes:} The same medicine may carry different device or
+  formulation suffixes across markets, such as \texttt{SEEBRI NEOHALER} in Drugs@FDA versus
+  \texttt{Seebri Breezhaler} in EMA Medicines and the DPD.
+\end{itemize}
+
+\begin{table}[htbp]
+\centering
+\caption{Examples of identical medicines with differing identifying attributes across sources}
+\label{tab:difficult_match}
+\footnotesize
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\textbf{Dataset} & \textbf{Brand Name} & \textbf{Active Substance} \\
+\hline
+Drugs@FDA & \texttt{VERKAZIA} & \texttt{CYCLOSPORINE} \\
+EMA Medicines & \texttt{Verkazia} & \texttt{ciclosporin} \\
+Health Canada DPD & \texttt{VERKAZIA} & \texttt{CYCLOSPORINE} \\
+\hline
+Drugs@FDA & \texttt{SEEBRI NEOHALER} & \texttt{GLYCOPYRROLATE} \\
+EMA Medicines & \texttt{Seebri Breezhaler} & \texttt{glycopyrronium bromide} \\
+Health Canada DPD & \texttt{SEEBRI BREEZHALER} & \texttt{GLYCOPYRRONIUM (GLYCOPYRRONIUM BROMIDE)} \\
+\hline
+\end{tabularx}
+\end{table}
+
+% ============================================================
+\section{Phase I: Data Selection and Translation}
+% ============================================================
+
+Phase~I translates three pharmaceutical datasets into a shared XML target
+schema using Altova MapForce 2027. The outputs are validated XML files
+consumed by Phases~II and~III.
+
+% ------------------------------------------------------------
+\subsection{Target Schema}
+% ------------------------------------------------------------
+
+The target schema (\texttt{medicines.xsd}) represents one medicine entity
+per source record, identified by \texttt{brandName} and
+\texttt{activeSubstances}, with 16 attributes and two metadata fields
+(\texttt{id}, \texttt{source}). Three conventions apply across all
+mappers: missing values are omitted rather than written as empty tags;
+repeating values use typed wrapper elements (\texttt{activeSubstances},
+\texttt{strengths}); and all dates follow ISO~8601 (YYYY-MM-DD).
+Controlled vocabularies are enforced for \texttt{regulatoryStatus} (six
+values: \textit{Authorised, Suspended, Pending, Withdrawn, Application
+withdrawn, Refused}) and \texttt{productClass} (\textit{Human,
+Veterinary, Disinfectant}).
+
+% ------------------------------------------------------------
+\subsection{Shared Helper Functions}
+% ------------------------------------------------------------
+
+A shared MapForce library (\texttt{wdi\_helpers.mfd}) provides ten
+user-defined functions imported by all mappers
+(Table~\ref{tab:udfs}). Lookup XML files cover 25 regulatory statuses,
+227 dosage forms, 147 routes, and 202 strength units across all three
+sources.
+
+\begin{table}[htbp]
+\centering
+\caption{Shared UDFs used across mappers}
+\label{tab:udfs}
+\scriptsize
+\begin{tabular}{|l|>{\raggedright\arraybackslash}p{7.5cm}|}
+\hline
+\textbf{Function} & \textbf{Purpose} \\
+\hline
+\texttt{makeMedicineId} & Constructs a stable entity ID from source prefix and record key \\
+\texttt{getActiveSubstances} & Tokenizes substance string; supports INN fallback for blank primary field \\
+\texttt{standardizeRegulatoryStatus} & Maps raw status values to the six controlled vocabulary entries \\
+\texttt{standardizeProductClass} & Maps category values to Human / Veterinary / Disinfectant \\
+\texttt{standardizeAtcCodes} & Combines human and vet ATC codes; deduplicates, sorts, corrects typos \\
+\texttt{yesNoToBoolean} & Converts Yes/No strings to \texttt{xs:boolean}; omits element when false \\
+\texttt{parseAuthorisationDate} & Converts DD/MM/YYYY to ISO~8601 YYYY-MM-DD \\
+\texttt{stdDosageForm} / \texttt{dosageFormList} & Standardizes single or multi-value dosage form strings \\
+\texttt{stdRoute} / \texttt{routeList} & Standardizes single or multi-value administration routes \\
+\texttt{splitStrengths} & Tokenizes a DPD strength string into (value, unit) pairs \\
+\hline
+\end{tabular}
+\end{table}
+
+% ------------------------------------------------------------
+\subsection{EMA Medicines Mapper}
+% ------------------------------------------------------------
+
+The EMA dataset is a single flat CSV table of 2,746 rows, with no
+pre-joining or consolidation required. Each row maps directly to one
+output \texttt{<medicine>} element. Because EMA does not publish strength
+or dosage form data, \texttt{dosageForm}, \texttt{route}, and
+\texttt{strengths} are structurally absent from EMA output.
+Table~\ref{tab:ema_mapping} lists all field correspondences.
+
+\begin{table}[htbp]
+\centering
+\caption{EMA Medicines field mapping}
+\label{tab:ema_mapping}
+\scriptsize
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Target field} & \textbf{Source column} & \textbf{Transformation} \\
+\hline
+\texttt{id}                   & EMA product number           & \texttt{makeMedicineId("EMA", number)} \\
+\texttt{brandName}            & Name of medicine             & Direct copy \\
+\texttt{activeSubstances}     & Active substance / INN       & \texttt{getActiveSubstances}; INN fallback \\
+\texttt{activeSubstanceCount} & (derived)                    & \texttt{count(activeSubstances)} \\
+\texttt{licenceHolder}        & MA holder                    & Direct copy \\
+\texttt{regulatoryStatus}     & Medicine status              & \texttt{standardizeRegulatoryStatus} \\
+\texttt{productClass}         & Category                     & \texttt{standardizeProductClass} \\
+\texttt{atcCode}              & ATC code (human) + ATCvet    & \texttt{standardizeAtcCodes} \\
+\texttt{generic} / \texttt{biosimilar} / \texttt{orphanMedicine} & Generic / Biosimilar / Orphan & \texttt{yesNoToBoolean} \\
+\texttt{euAuthorisationDate}  & Marketing authorisation date & \texttt{parseAuthorisationDate} \\
+\hline
+\end{tabular}
+\end{table}
+
+The most intricate correspondence handles active substances. For 57 of
+the 2,746 rows, both \texttt{Active substance} and the \texttt{INN /
+common name} column are blank; because \texttt{activeSubstances} is
+mandatory in the target schema, these rows are excluded via a row filter.
+A further 28 rows have a blank primary field but a populated INN column:
+the mapper applies an INN fallback, normalizing whitespace and selecting
+the non-empty value. Commas and the word ``and'' are not treated as
+separators, preserving multi-word biological descriptions. The result is
+\textbf{2,689 output records}.
+
+EMA maintains separate human and veterinary ATC code columns.
+\texttt{standardizeAtcCodes} concatenates both, strips asterisks used
+for provisional codes, drops the \textit{Not yet assigned} placeholder,
+corrects a known EMA typo (\texttt{VO4D} $\rightarrow$ \texttt{V04D}),
+then deduplicates, sorts, and joins codes with \texttt{"; "}. Date
+conversion (\texttt{parseAuthorisationDate}) reorders DD/MM/YYYY to
+YYYY-MM-DD. The three boolean flags are stored as Yes/No strings;
+\texttt{yesNoToBoolean} converts them and omits the element when false,
+consistent with the \texttt{minOccurs="0"} schema convention. The full
+export passed XSD validation with 2,689 unique \texttt{EMA\_} IDs and no
+errors.
+
+% ------------------------------------------------------------
+\subsection{Drugs@FDA Mapper}
+% ------------------------------------------------------------
+
+The Drugs@FDA mapper specification is defined in the project repository;
+implementation is pending.
+
+% ------------------------------------------------------------
+\subsection{Health Canada DPD Mapper}
+% ------------------------------------------------------------
+
+The DPD source is a pre-consolidated CSV of \textbf{41,636 medicine
+entities} derived from 58,137 product records across 12 Health Canada
+tables (\texttt{dpd\_entities.csv}). Unlike the EMA flat table, each DPD
+entity already aggregates multiple product records, so the mapper
+operates on one row per entity without further consolidation. The DPD
+source provides all 16 target attributes including \texttt{dosageForm},
+\texttt{route}, and \texttt{strengths}, making it the most complete of
+the three sources.
+
+\begin{table}[htbp]
+\centering
+\caption{Health Canada DPD field mapping}
+\label{tab:dpd_mapping}
+\scriptsize
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Target field} & \textbf{Source column} & \textbf{Transformation} \\
+\hline
+\texttt{id}                   & medicine\_id          & \texttt{makeMedicineId("DPD", id)} \\
+\texttt{brandName}            & brand\_name           & Direct copy \\
+\texttt{activeSubstances}     & active\_substances    & \texttt{getActiveSubstances}; separator \texttt{"; "} \\
+\texttt{activeSubstanceCount} & (derived)             & \texttt{count(activeSubstances)} \\
+\texttt{licenceHolder}        & licence\_holder       & Direct copy \\
+\texttt{regulatoryStatus}     & current\_status       & \texttt{standardizeRegulatoryStatus} \\
+\texttt{productClass}         & product\_class        & \texttt{standardizeProductClass} \\
+\texttt{atcCode}              & atc\_code             & \texttt{standardizeAtcCodes} \\
+\texttt{biosimilar}           & biosimilar            & \texttt{yesNoToBoolean} \\
+\texttt{dosageForm}           & dosage\_forms         & \texttt{dosageFormList} \\
+\texttt{route}                & routes                & \texttt{routeList} \\
+\texttt{strengths}            & strengths             & \texttt{splitStrengths} $\rightarrow$ (value, unit) pairs \\
+\texttt{caStatusDate}         & status\_date          & Direct copy (ISO date) \\
+\hline
+\end{tabular}
+\end{table}
+
+The main mapping challenge in DPD is strength parsing. Each entity row
+carries a semicolon-delimited strength string (e.g.\
+\texttt{"10MG; 0.5\%"}); \texttt{splitStrengths} tokenizes this into
+individual tokens, from which \texttt{strengthValue} extracts the numeric
+component and \texttt{strengthUnit} normalizes the unit via
+\texttt{lookups/strength\_unit.xml}. Tokens without a parseable numeric
+value are filtered out before the \texttt{<strength>} wrapper is created,
+and the wrapper itself is omitted when no valid tokens remain. Regulatory
+status presents a similar aggregation challenge: DPD entities can carry
+multiple historical statuses (e.g.\ \texttt{"MARKETED; CANCELLED POST
+MARKET"}), so \texttt{standardizeRegulatoryStatus} selects the highest
+active status according to the precedence hierarchy
+$\text{Authorised} > \text{Suspended} > \cdots > \text{Refused}$.
+
+The full export passed XSD validation with \textbf{41,636 records},
+100,094 strength pairs across 41,574 medicines, and no schema errors.
+
+
+
+
+% ============================================================
+\section{Phase II: Identity Resolution}
+% ============================================================
+
+
+
+
+% ============================================================
+\section{Phase III: Data Fusion}
+% ============================================================
+
+
+
+
+% ============================================================
+\section{Conclusion}
+% ============================================================
+
+
+
+
+% ============================================================
+% SOURCES
+% ============================================================
+
+\section*{Sources}
+\addcontentsline{toc}{section}{Sources}
+
+\begin{itemize}
+    \item U.S. Food and Drug Administration,
+    \emph{Drugs@FDA Data Files}.\\
+    \url{https://www.fda.gov/drugs/drug-approvals-and-databases/drugsfda-data-files}
+
+    \item European Medicines Agency,
+    \emph{Download medicine data}.\\
+    \url{https://www.ema.europa.eu/en/medicines/download-medicine-data}
+
+    \item Health Canada,
+    \emph{Drug Product Database}.\\
+    \url{https://www.canada.ca/en/health-canada/services/drugs-health-products/drug-products/drug-product-database.html}
+\end{itemize}
+
+\end{document}
