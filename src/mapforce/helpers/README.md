@@ -1,6 +1,8 @@
 # MapForce Helper Functions & Lookups
 
-This directory provides reusable helper functions and lookup tables to standardize pharmaceutical attributes across **Drugs@FDA**, **Health Canada DPD**, and **EMA Medicines** into the shared target schema [`medicines.xsd`](file:///Users/gabrielhimmelein/Projects/wdi-drug-integration/src/mapforce/schema/medicines.xsd).
+This directory provides reusable helper functions and lookup tables to standardize pharmaceutical attributes across **Drugs@FDA**, **Health Canada DPD**, and **EMA Medicines** into the shared target schema [medicines.xsd](../schema/medicines.xsd).
+
+For normal execution, open [dpd_mapping.mfd](../dpd_mapping.mfd) or [ema_mapping.mfd](../ema_mapping.mfd). Both already import the two repository libraries below using relative paths. Functions should appear automatically in MapForce's Libraries pane; they are not installed in a developer's private library. Keep the repository folder structure intact. See the [team quick start](../README.md#team-quick-start) for inputs, outputs, and prerequisites.
 
 ---
 
@@ -8,13 +10,15 @@ This directory provides reusable helper functions and lookup tables to standardi
 
 | File | Purpose |
 | :--- | :--- |
-| [`wdi_helpers.mfd`](file:///Users/gabrielhimmelein/Projects/wdi-drug-integration/src/mapforce/helpers/wdi_helpers.mfd) | Altova MapForce User-Defined Function (UDF) library for the **Built-in** execution engine (14 self-contained inlined UDFs with embedded `value-map` lookup tables). |
-| [`build_helpers_mfd.py`](file:///Users/gabrielhimmelein/Projects/wdi-drug-integration/src/mapforce/helpers/build_helpers_mfd.py) | Generator and `.mfd` XML simulator that builds `wdi_helpers.mfd` and verifies all 107 test cases against the actual `.mfd` component graphs. |
-| [`wdi_helpers.xslt`](file:///Users/gabrielhimmelein/Projects/wdi-drug-integration/src/mapforce/helpers/wdi_helpers.xslt) | Companion **XSLT 2.0 / 3.0** library, directly importable via `Component | Import XSLT 2.0 / XQuery Function Library...`. |
-| [`udf_reference.py`](file:///Users/gabrielhimmelein/Projects/wdi-drug-integration/src/mapforce/helpers/udf_reference.py) | Python reference implementation and oracle test suite running 107 unit tests and data coverage audits. |
-| [`udf_test_cases.csv`](file:///Users/gabrielhimmelein/Projects/wdi-drug-integration/src/mapforce/helpers/udf_test_cases.csv) | Test suite (107 test cases) covering all functions and edge cases across FDA, EMA, and DPD data. |
+| [wdi_helpers.mfd](wdi_helpers.mfd) | Built-in engine library with 14 low-level UDFs, including embedded `value-map` lookups. |
+| [wdi_mapping_functions.mfd](wdi_mapping_functions.mfd) | Ten readable mapping functions; imports `wdi_helpers.mfd` from the same directory. |
+| [build_helpers_mfd.py](build_helpers_mfd.py) | Generator and `.mfd` graph simulator for the low-level library and its 124 test cases. |
+| [build_mapping_functions.py](build_mapping_functions.py) | Generator for the named-function library; optionally rebuilds both main diagrams. Development use only. |
+| [wdi_helpers.xslt](wdi_helpers.xslt) | Companion XSLT 2.0 / 3.0 library; not required by the Built-in EMA/DPD mappings. |
+| [udf_reference.py](udf_reference.py) | Python reference implementation, 124 helper test cases, and data coverage audits. |
+| [udf_test_cases.csv](udf_test_cases.csv) | Shared helper test cases covering functions and edge cases across FDA, EMA, and DPD. |
 
-Lookup XML files are located in [`../lookups/`](file:///Users/gabrielhimmelein/Projects/wdi-drug-integration/src/mapforce/lookups/):
+Lookup XML files are located in [../lookups/](../lookups/):
 * `regulatory_status.xml`: 25 entries mapping all FDA, EMA, and DPD statuses to 6 harmonized values.
 * `product_class.xml`: Maps source classes to `Human`, `Veterinary`, or `Disinfectant`.
 * `dosage_form.xml`: 227 entries mapping observed FDA and DPD forms to standard dosage forms.
@@ -25,6 +29,25 @@ Lookup XML files are located in [`../lookups/`](file:///Users/gabrielhimmelein/P
 ---
 
 ## 2. Function Reference
+
+### 2.0 Named Mapping Functions (`wdi_mapping_functions.mfd`)
+
+| Function | Purpose |
+| :--- | :--- |
+| `makeMedicineId(source, key)` | Join source, underscore, and the source entity key. |
+| `getActiveSubstances(primary, fallback, separator)` | Normalize XML whitespace, prefer nonblank primary text over fallback, and split the selected text using the source separator. |
+| `yesNoToBoolean(value)` | Compare a present value with `Yes`; emit true on a match, otherwise false. |
+| `parseAuthorisationDate(value)` | Parse EMA DD/MM/YYYY dates into ISO dates. |
+| `splitStrengths(values)` | Split a DPD strength list on `; `; does not itself validate or extract numeric values. |
+| `standardizeRegulatoryStatus(raw)` | Readable wrapper around `stdRegulatoryStatus`. |
+| `standardizeProductClass(raw)` | Readable wrapper around `stdProductClass`. |
+| `standardizeAtcCodes(codes, additionalCodes)` | Combine human/veterinary lists, then standardize ATC codes. |
+| `standardizeDosageForms(raw)` | Readable wrapper around `dosageFormList`. |
+| `standardizeRoutes(raw)` | Readable wrapper around `routeList`. |
+
+The main DPD diagram calls the existing status/class/ATC/form/route helpers directly. Its strength pipeline keeps token validation, numeric/unit extraction, and row-level wrapper filtering visible. Both extractors consume the same retained token, preserving each value/unit pair. There is no structured-output `getValidStrengths` function or extra internal schema dependency. The main EMA diagram uses the named wrappers. Count parent contexts and row filters remain in the main diagrams.
+
+Supply an explicit empty-string constant for an unused fallback or additional-code input when adding a call; leaving an optional connector unwired can cause a connection to be lost during inlining.
 
 ### 2.1 Strength Splitting
 
@@ -146,12 +169,19 @@ Lookup XML files are located in [`../lookups/`](file:///Users/gabrielhimmelein/P
 
 ## 3. How to Plug Them into Altova MapForce
 
-### Method A: Import as Function Library (Recommended)
-1. In MapForce, open your mapping (`fda_mapping.mfd` or `dpd_mapping.mfd`).
+### Existing EMA/DPD mappings
+
+Open the main `.mfd` directly and select the Built-in engine. The saved imports load both libraries automatically. No generator, Python runtime, C++ compiler, personal library installation, or manual reconnection is required. The files were tested in MapForce 2027; older-version compatibility is unverified.
+
+### Method A: Import into a new mapping
+
+These steps are for creating a new mapping, not for running the existing EMA/DPD diagrams.
+
+1. In MapForce, open the new mapping.
 2. Go to **Component** $\rightarrow$ **Import MapForce Function Library...** (or **Import XSLT 2.0 / XQuery Function Library...** if using XSLT mode).
-3. Select [`wdi_helpers.mfd`](file:///Users/gabrielhimmelein/Projects/wdi-drug-integration/src/mapforce/helpers/wdi_helpers.mfd) or [`wdi_helpers.xslt`](file:///Users/gabrielhimmelein/Projects/wdi-drug-integration/src/mapforce/helpers/wdi_helpers.xslt).
-4. The helper functions will appear in the **Libraries** window under `wdi_helpers`.
-5. Drag and drop them directly onto the canvas between your source fields and the target [`medicines.xsd`](file:///Users/gabrielhimmelein/Projects/wdi-drug-integration/src/mapforce/schema/medicines.xsd) elements.
+3. Select [wdi_helpers.mfd](wdi_helpers.mfd) and, for the named functions, [wdi_mapping_functions.mfd](wdi_mapping_functions.mfd). Save imports as relative paths. Use [wdi_helpers.xslt](wdi_helpers.xslt) only for the alternative XSLT workflow.
+4. The helper functions will appear in the **Libraries** window.
+5. Drag functions onto the canvas between source fields and the target [medicines.xsd](../schema/medicines.xsd) elements.
 
 ### Method B: Connecting XML Lookup Files Directly on the Canvas
 If designing visually with MapForce core components:

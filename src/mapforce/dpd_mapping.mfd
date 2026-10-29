@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Edited with Altova MapForce 2026r2 -->
+<!-- Edited with Altova MapForce 2027 -->
 <mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="35">
 	<settings>
 		<libraries>
 			<import path="helpers\wdi_helpers.mfd" saverelative="1"/>
+			<import path="helpers\wdi_mapping_functions.mfd" saverelative="1"/>
 		</libraries>
 	</settings>
 	<resources/>
@@ -11,152 +12,9 @@
 		<properties SelectedLanguage="builtin"/>
 		<structure>
 			<children>
-				<component name="constant" library="core" uid="1104" kind="2">
-					<targets>
-						<datapoint pos="0" key="1"/>
-					</targets>
-					<view ltx="337" lty="-84" rbx="404" rby="-66"/>
-					<data>
-						<constant value="DPD_" datatype="string"/>
-					</data>
-				</component>
-				<component name="concat" library="core" uid="1106" kind="5" growable="1" growablebasename="value">
-					<sources>
-						<datapoint pos="0" key="2"/>
-						<datapoint pos="1" key="3"/>
-					</sources>
-					<targets>
-						<datapoint pos="0" key="4"/>
-					</targets>
-					<view ltx="453" lty="-83" rbx="530" rby="-24"/>
-				</component>
-				<component name="constant" library="core" uid="1109" kind="2">
-					<targets>
-						<datapoint pos="0" key="5"/>
-					</targets>
-					<view ltx="406" lty="255" rbx="464" rby="273"/>
-					<data>
-						<constant value="Yes" datatype="string"/>
-					</data>
-				</component>
-				<component name="equal" library="core" uid="1108" kind="5">
-					<sources>
-						<datapoint pos="0" key="6"/>
-						<datapoint pos="1" key="7"/>
-					</sources>
-					<targets>
-						<datapoint pos="0" key="8"/>
-					</targets>
-					<view ltx="439" lty="186" rbx="491" rby="243"/>
-				</component>
-				<component name="medicines" library="xml" uid="2" kind="14">
-					<properties XSLTTargetEncoding="UTF-8" XSLTDefaultOutput="1"/>
-					<view ltx="771" lty="-30" rbx="1276" rby="345"/>
-					<data>
-						<root>
-							<header>
-								<namespaces>
-									<namespace/>
-									<namespace uid="http://www.altova.com/mapforce"/>
-								</namespaces>
-							</header>
-							<entry name="FileInstance" ns="1" expanded="1">
-								<entry name="document" ns="1" expanded="1" casttotargettypemode="cast-in-subtree">
-									<entry name="medicines" expanded="1">
-										<entry name="medicine" inpkey="16" expanded="1">
-											<entry name="id" inpkey="17"/>
-											<entry name="source" inpkey="18"/>
-											<entry name="brandName" inpkey="19"/>
-											<entry name="activeSubstances" expanded="1">
-												<entry name="activeSubstance" inpkey="20"/>
-											</entry>
-											<entry name="licenceHolder" inpkey="21"/>
-											<entry name="regulatoryStatus" inpkey="29"/>
-											<entry name="productClass" inpkey="30"/>
-											<entry name="atcCode" inpkey="31"/>
-											<entry name="biosimilar" inpkey="22"/>
-											<entry name="caStatusDate" inpkey="23"/>
-										</entry>
-									</entry>
-								</entry>
-							</entry>
-						</root>
-						<document schema="schema\medicines.xsd" instanceroot="{}medicines" outputinstance="schema\medicines.xml"/>
-					</data>
-				</component>
-				<component name="tokenize" library="core" uid="1111" kind="5">
-					<sources>
-						<datapoint pos="0" key="24"/>
-						<datapoint pos="1" key="25"/>
-					</sources>
-					<targets>
-						<datapoint pos="0" key="26"/>
-					</targets>
-					<view ltx="589" lty="86" rbx="677" rby="143"/>
-				</component>
-				<component name="constant" library="core" uid="1103" kind="2">
-					<targets>
-						<datapoint pos="0" key="27"/>
-					</targets>
-					<view ltx="605" lty="-69" rbx="667" rby="-51"/>
-					<data>
-						<constant value="DPD" datatype="string"/>
-					</data>
-				</component>
-				<component name="constant" library="core" uid="1112" kind="2">
-					<targets>
-						<datapoint pos="0" key="28"/>
-					</targets>
-					<view ltx="501" lty="169" rbx="548" rby="187"/>
-					<data>
-						<constant value="; " datatype="string"/>
-					</data>
-				</component>
-				<component name="bestRegulatoryStatus" library="user" uid="104010" kind="19" visible="0">
-					<view ltx="601" lty="253" rbx="694" rby="270"/>
-					<data>
-						<root>
-							<header>
-								<namespaces>
-									<namespace/>
-								</namespaces>
-							</header>
-							<entry name="raw" inpkey="32" componentid="104001"/>
-						</root>
-						<root>
-							<header>
-								<namespaces>
-									<namespace/>
-								</namespaces>
-							</header>
-							<entry name="result" outkey="33" componentid="104008"/>
-						</root>
-					</data>
-				</component>
-				<component name="stdProductClass" library="user" uid="105016" kind="19" visible="0">
-					<view ltx="589" lty="169" rbx="682" rby="186"/>
-					<data>
-						<root>
-							<header>
-								<namespaces>
-									<namespace/>
-								</namespaces>
-							</header>
-							<entry name="raw" inpkey="34" componentid="105001"/>
-						</root>
-						<root>
-							<header>
-								<namespaces>
-									<namespace/>
-								</namespaces>
-							</header>
-							<entry name="result" outkey="35" componentid="105014"/>
-						</root>
-					</data>
-				</component>
 				<component name="dpd_entities" library="text" uid="3" kind="16">
 					<properties/>
-					<view ltx="186" lty="1" rbx="384" rby="501"/>
+					<view ltx="20" rbx="470" rby="700"/>
 					<data>
 						<root>
 							<header>
@@ -171,17 +29,20 @@
 										<entry name="medicine_id" outkey="10"/>
 										<entry name="brand_name" outkey="11"/>
 										<entry name="active_substances" outkey="12"/>
+										<entry name="strengths" outkey="53"/>
 										<entry name="licence_holder" outkey="13"/>
 										<entry name="product_class" outkey="36"/>
 										<entry name="atc_code" outkey="37"/>
 										<entry name="biosimilar" outkey="14"/>
+										<entry name="dosage_forms" outkey="45"/>
+										<entry name="routes" outkey="49"/>
 										<entry name="current_status" outkey="38"/>
 										<entry name="status_date" outkey="15"/>
 									</entry>
 								</entry>
 							</entry>
 						</root>
-						<text type="csv" encoding="1000" byteorder="1" byteordermark="0" inputinstance="\\Mac\Home\Documents\IE 683 Web Data integration Project\wdi-drug-integration\data\2_processed\dpd_entities.csv">
+						<text type="csv" encoding="1000" byteorder="1" byteordermark="0" inputinstance="..\..\data\2_processed\dpd_entities.csv">
 							<settings separator="," quote="&quot;" firstrownames="true" removeempty="true">
 								<names root="dpd_entities" block="Rows">
 									<field0 name="medicine_id" type="string"/>
@@ -207,8 +68,79 @@
 						</text>
 					</data>
 				</component>
-				<component name="stdAtcCode" library="user" uid="112030" kind="19" visible="0">
-					<view ltx="561" lty="362" rbx="654" rby="379"/>
+				<component name="medicines" library="xml" uid="2" kind="14">
+					<properties XSLTTargetEncoding="UTF-8" XSLTDefaultOutput="1"/>
+					<view ltx="1170" rbx="1650" rby="750"/>
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+									<namespace uid="http://www.altova.com/mapforce"/>
+								</namespaces>
+							</header>
+							<entry name="FileInstance" ns="1" expanded="1">
+								<entry name="document" ns="1" expanded="1" casttotargettypemode="cast-in-subtree">
+									<entry name="medicines" expanded="1">
+										<entry name="medicine" inpkey="16" expanded="1">
+											<entry name="id" inpkey="17"/>
+											<entry name="source" inpkey="18"/>
+											<entry name="brandName" inpkey="19"/>
+											<entry name="activeSubstances" expanded="1">
+												<entry name="activeSubstance" inpkey="20"/>
+											</entry>
+											<entry name="activeSubstanceCount" inpkey="44"/>
+											<entry name="licenceHolder" inpkey="21"/>
+											<entry name="regulatoryStatus" inpkey="29"/>
+											<entry name="productClass" inpkey="30"/>
+											<entry name="atcCode" inpkey="31"/>
+											<entry name="biosimilar" inpkey="22"/>
+											<entry name="dosageForm" inpkey="48"/>
+											<entry name="route" inpkey="52"/>
+											<entry name="strengths" inpkey="71" expanded="1">
+												<entry name="strength" inpkey="66" expanded="1">
+													<entry name="value" inpkey="67"/>
+													<entry name="unit" inpkey="68"/>
+												</entry>
+											</entry>
+											<entry name="caStatusDate" inpkey="23"/>
+										</entry>
+									</entry>
+								</entry>
+							</entry>
+						</root>
+						<document schema="schema\medicines.xsd" instanceroot="{}medicines" outputinstance="..\..\data\4_translated_mapforce\dpd_medicines.xml"/>
+					</data>
+				</component>
+				<component name="constant" library="core" uid="3001" kind="2">
+					<targets>
+						<datapoint pos="0" key="301"/>
+					</targets>
+					<view ltx="500" lty="-70" rbx="560" rby="-54"/>
+					<data>
+						<constant value="DPD" datatype="string"/>
+					</data>
+				</component>
+				<component name="constant" library="core" uid="3002" kind="2">
+					<targets>
+						<datapoint pos="0" key="302"/>
+					</targets>
+					<view ltx="500" lty="150" rbx="545" rby="166"/>
+					<data>
+						<constant value="; " datatype="string"/>
+					</data>
+				</component>
+				<component name="constant" library="core" uid="3003" kind="2">
+					<targets>
+						<datapoint pos="0" key="303"/>
+					</targets>
+					<view ltx="500" lty="240" rbx="540" rby="256"/>
+					<data>
+						<constant datatype="string"/>
+					</data>
+				</component>
+				<component name="makeMedicineId" library="user" uid="3004" kind="19" visible="0">
+					<view ltx="650" rbx="753" rby="33"/>
 					<data>
 						<root>
 							<header>
@@ -216,7 +148,8 @@
 									<namespace/>
 								</namespaces>
 							</header>
-							<entry name="raw" inpkey="39" componentid="112001"/>
+							<entry name="source" inpkey="304" componentid="120001"/>
+							<entry name="key" inpkey="305" componentid="120002"/>
 						</root>
 						<root>
 							<header>
@@ -224,33 +157,360 @@
 									<namespace/>
 								</namespaces>
 							</header>
-							<entry name="result" outkey="40" componentid="112028"/>
+							<entry name="result" outkey="306" componentid="120005"/>
 						</root>
 					</data>
+				</component>
+				<component name="getActiveSubstances" library="user" uid="3005" kind="19" visible="0">
+					<view ltx="650" lty="120" rbx="767" rby="170"/>
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="primary" inpkey="307" componentid="121001"/>
+							<entry name="fallback" inpkey="308" componentid="121002"/>
+							<entry name="separator" inpkey="309" componentid="121003"/>
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="result" outkey="310" componentid="121013"/>
+						</root>
+					</data>
+				</component>
+				<component name="count" library="core" uid="3006" kind="5">
+					<sources>
+						<datapoint pos="0" key="311"/>
+						<datapoint pos="1" key="312"/>
+					</sources>
+					<targets>
+						<datapoint pos="0" key="313"/>
+					</targets>
+					<view ltx="900" lty="160" rbx="1011" rby="212"/>
+				</component>
+				<component name="bestRegulatoryStatus" library="user" uid="3007" kind="19" visible="0">
+					<view ltx="650" lty="300" rbx="738" rby="317"/>
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="raw" inpkey="314" componentid="104001"/>
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="result" outkey="315" componentid="104008"/>
+						</root>
+					</data>
+				</component>
+				<component name="stdProductClass" library="user" uid="3008" kind="19" visible="0">
+					<view ltx="650" lty="400" rbx="738" rby="417"/>
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="raw" inpkey="316" componentid="105001"/>
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="result" outkey="317" componentid="105014"/>
+						</root>
+					</data>
+				</component>
+				<component name="stdAtcCode" library="user" uid="3009" kind="19" visible="0">
+					<view ltx="650" lty="500" rbx="738" rby="517"/>
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="raw" inpkey="318" componentid="112001"/>
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="result" outkey="319" componentid="112028"/>
+						</root>
+					</data>
+				</component>
+				<component name="yesNoToBoolean" library="user" uid="3010" kind="19" visible="0">
+					<view ltx="650" lty="600" rbx="747" rby="617"/>
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="value" inpkey="320" componentid="122001"/>
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="result" outkey="321" componentid="122004"/>
+						</root>
+					</data>
+				</component>
+				<component name="dosageFormList" library="user" uid="3011" kind="19" visible="0">
+					<view ltx="650" lty="700" rbx="738" rby="717"/>
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="raw" inpkey="322" componentid="107001"/>
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="result" outkey="323" componentid="107014"/>
+						</root>
+					</data>
+				</component>
+				<component name="routeList" library="user" uid="3012" kind="19" visible="0">
+					<view ltx="650" lty="800" rbx="738" rby="817"/>
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="raw" inpkey="324" componentid="109001"/>
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="result" outkey="325" componentid="109014"/>
+						</root>
+					</data>
+				</component>
+				<component name="splitStrengths" library="user" uid="3013" kind="19" visible="0">
+					<view ltx="650" lty="900" rbx="752" rby="917"/>
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="values" inpkey="326" componentid="124001"/>
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="result" outkey="327" componentid="124004"/>
+						</root>
+					</data>
+				</component>
+				<component name="exists" library="core" uid="3015" kind="5">
+					<sources>
+						<datapoint pos="0" key="330"/>
+					</sources>
+					<targets>
+						<datapoint pos="0" key="331"/>
+					</targets>
+					<view ltx="1050" lty="1000" rbx="1117" rby="1036"/>
+				</component>
+				<component name="strengthValue" library="user" uid="3017" kind="19" visible="0">
+					<view ltx="900" lty="900" rbx="988" rby="917"/>
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="raw" inpkey="335" componentid="101001"/>
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="result" outkey="336" componentid="101034"/>
+						</root>
+					</data>
+				</component>
+				<component name="strengthUnit" library="user" uid="3018" kind="19" visible="0">
+					<view ltx="900" lty="1000" rbx="988" rby="1017"/>
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="raw" inpkey="337" componentid="102001"/>
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="result" outkey="338" componentid="102071"/>
+						</root>
+					</data>
+				</component>
+				<component name="count" library="core" uid="3019" kind="5">
+					<sources>
+						<datapoint pos="0" key="339"/>
+						<datapoint pos="1" key="340"/>
+					</sources>
+					<targets>
+						<datapoint pos="0" key="341"/>
+					</targets>
+					<view ltx="900" lty="1200" rbx="1011" rby="1252"/>
+				</component>
+				<component name="constant" library="core" uid="3020" kind="2">
+					<targets>
+						<datapoint pos="0" key="342"/>
+					</targets>
+					<view ltx="700" lty="1200" rbx="737" rby="1216"/>
+					<data>
+						<constant value="0" datatype="integer"/>
+					</data>
+				</component>
+				<component name="greater" library="core" uid="3021" kind="5">
+					<sources>
+						<datapoint pos="0" key="343"/>
+						<datapoint pos="1" key="344"/>
+					</sources>
+					<targets>
+						<datapoint pos="0" key="345"/>
+					</targets>
+					<view ltx="1100" lty="1200" rbx="1160" rby="1252"/>
+				</component>
+				<component name="Rows" library="core" uid="3022" kind="3">
+					<sources>
+						<datapoint pos="0" key="346"/>
+						<datapoint pos="1" key="347"/>
+					</sources>
+					<targets>
+						<datapoint pos="0" key="348"/>
+						<datapoint/>
+					</targets>
+					<view ltx="900" lty="1050" rbx="1000" rby="1102"/>
+				</component>
+				<component name="strengthValue" library="user" uid="3014" kind="19" visible="0">
+					<view ltx="900" lty="952" rbx="988" rby="969"/>
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="raw" inpkey="328" componentid="101001"/>
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace/>
+								</namespaces>
+							</header>
+							<entry name="result" outkey="329" componentid="101034"/>
+						</root>
+					</data>
+				</component>
+				<component name="result" library="core" uid="3016" kind="3">
+					<sources>
+						<datapoint pos="0" key="332"/>
+						<datapoint pos="1" key="333"/>
+					</sources>
+					<targets>
+						<datapoint pos="0" key="334"/>
+						<datapoint/>
+					</targets>
+					<view ltx="900" lty="1124" rbx="1000" rby="1176"/>
 				</component>
 			</children>
 		</structure>
 		<connections>
-			<edge from="1" to="2"/>
-			<edge from="10" to="3"/>
-			<edge from="14" to="6"/>
-			<edge from="5" to="7"/>
 			<edge from="9" to="16"/>
-			<edge from="4" to="17"/>
-			<edge from="27" to="18"/>
+			<edge from="306" to="17"/>
+			<edge from="301" to="18"/>
 			<edge from="11" to="19"/>
-			<edge from="26" to="20"/>
+			<edge from="310" to="20"/>
 			<edge from="13" to="21"/>
-			<edge from="8" to="22"/>
+			<edge from="321" to="22"/>
 			<edge from="15" to="23"/>
-			<edge from="12" to="24"/>
-			<edge from="28" to="25"/>
-			<edge from="33" to="29"/>
-			<edge from="35" to="30"/>
-			<edge from="40" to="31"/>
-			<edge from="38" to="32"/>
-			<edge from="36" to="34"/>
-			<edge from="37" to="39"/>
+			<edge from="315" to="29"/>
+			<edge from="317" to="30"/>
+			<edge from="319" to="31"/>
+			<edge from="313" to="44"/>
+			<edge from="323" to="48"/>
+			<edge from="325" to="52"/>
+			<edge from="334" to="66"/>
+			<edge from="336" to="67"/>
+			<edge from="338" to="68"/>
+			<edge from="348" to="71"/>
+			<edge from="301" to="304"/>
+			<edge from="10" to="305"/>
+			<edge from="12" to="307"/>
+			<edge from="303" to="308"/>
+			<edge from="302" to="309"/>
+			<edge from="9" to="311"/>
+			<edge from="310" to="312"/>
+			<edge from="38" to="314"/>
+			<edge from="36" to="316"/>
+			<edge from="37" to="318"/>
+			<edge from="14" to="320"/>
+			<edge from="45" to="322"/>
+			<edge from="49" to="324"/>
+			<edge from="53" to="326"/>
+			<edge from="327" to="328"/>
+			<edge from="329" to="330"/>
+			<edge from="327" to="332"/>
+			<edge from="331" to="333"/>
+			<edge from="334" to="335"/>
+			<edge from="334" to="337"/>
+			<edge from="9" to="339"/>
+			<edge from="334" to="340"/>
+			<edge from="341" to="343"/>
+			<edge from="342" to="344"/>
+			<edge from="9" to="346"/>
+			<edge from="345" to="347"/>
 		</connections>
 	</component>
 </mapping>

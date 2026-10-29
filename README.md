@@ -18,6 +18,14 @@ Ensure you have Python installed, then install the necessary dependencies for da
 pip install -r requirements.txt
 ```
 
+For Windows PowerShell, use the project's configured virtual environment explicitly:
+
+```powershell
+& .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+The requirements include `lxml` and `jsonschema` for validating MapForce XML/JSON output. See [`src/mapforce/README.md`](src/mapforce/README.md#4-verification--validation) for validation commands, the current DPD mapping status, and known environment limitations.
+
 ## Repository Structure
 ```text
 wdi-drug-integration/

@@ -1,259 +1,43 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Edited with Altova MapForce 2026r2 -->
-<mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="35">
+<?xml version='1.0' encoding='utf-8'?>
+<mapping version="35">
 	<settings>
 		<libraries>
-			<import path="helpers\wdi_helpers.mfd" saverelative="1"/>
+			<import path="helpers\wdi_helpers.mfd" saverelative="1" />
+			<import path="helpers\wdi_mapping_functions.mfd" saverelative="1" />
 		</libraries>
 	</settings>
-	<resources/>
+	<resources />
 	<component name="defaultmap" uid="1">
-		<properties SelectedLanguage="builtin"/>
+		<properties SelectedLanguage="builtin" />
 		<structure>
 			<children>
-				<!-- Constant: "EMA" for source field -->
-				<component name="constant" library="core" uid="1104" kind="2">
-					<targets>
-						<datapoint pos="0" key="1"/>
-					</targets>
-					<view ltx="351" lty="-69" rbx="412" rby="-53"/>
-					<data>
-						<constant value="EMA" datatype="string"/>
-					</data>
-				</component>
-				<!-- Constant: "EMA_" prefix for id -->
-				<component name="constant" library="core" uid="1105" kind="2">
-					<targets>
-						<datapoint pos="0" key="2"/>
-					</targets>
-					<view ltx="351" lty="-100" rbx="412" rby="-84"/>
-					<data>
-						<constant value="EMA_" datatype="string"/>
-					</data>
-				</component>
-				<!-- concat: "EMA_" + EMA product number -> id -->
-				<component name="concat" library="core" uid="1106" kind="5" growable="1" growablebasename="value">
-					<sources>
-						<datapoint pos="0" key="3"/>
-						<datapoint pos="1" key="4"/>
-					</sources>
-					<targets>
-						<datapoint pos="0" key="5"/>
-					</targets>
-					<view ltx="501" lty="25" rbx="579" rby="78"/>
-				</component>
-				<!-- tokenize: Active substance split by ";" -->
-				<component name="tokenize" library="core" uid="1111" kind="5">
-					<sources>
-						<datapoint pos="0" key="6"/>
-						<datapoint pos="1" key="7"/>
-					</sources>
-					<targets>
-						<datapoint pos="0" key="8"/>
-					</targets>
-					<view ltx="535" lty="197" rbx="624" rby="248"/>
-				</component>
-				<!-- Constant: ";" delimiter for tokenize -->
-				<component name="constant" library="core" uid="1112" kind="2">
-					<targets>
-						<datapoint pos="0" key="9"/>
-					</targets>
-					<view ltx="431" lty="244" rbx="476" rby="260"/>
-					<data>
-						<constant value=";" datatype="string"/>
-					</data>
-				</component>
-				<!-- stdRegulatoryStatus UDF -->
-				<component name="stdRegulatoryStatus" library="user" uid="103016" kind="19" visible="0">
-					<view ltx="502" lty="93" rbx="589" rby="109"/>
-					<data>
-						<root>
-							<header>
-								<namespaces>
-									<namespace/>
-								</namespaces>
-							</header>
-							<entry name="raw" inpkey="12" componentid="103001"/>
-						</root>
-						<root>
-							<header>
-								<namespaces>
-									<namespace/>
-								</namespaces>
-							</header>
-							<entry name="result" outkey="13" componentid="103014"/>
-						</root>
-					</data>
-				</component>
-				<!-- stdProductClass UDF -->
-				<component name="stdProductClass" library="user" uid="105016" kind="19" visible="0">
-					<view ltx="502" lty="146" rbx="589" rby="162"/>
-					<data>
-						<root>
-							<header>
-								<namespaces>
-									<namespace/>
-								</namespaces>
-							</header>
-							<entry name="raw" inpkey="14" componentid="105001"/>
-						</root>
-						<root>
-							<header>
-								<namespaces>
-									<namespace/>
-								</namespaces>
-							</header>
-							<entry name="result" outkey="15" componentid="105014"/>
-						</root>
-					</data>
-				</component>
-				<!-- concat1: ATC code (human) + ";" -->
-				<component name="concat" library="core" uid="105018" kind="5" growable="1" growablebasename="value">
-					<sources>
-						<datapoint pos="0" key="16"/>
-						<datapoint pos="1" key="17"/>
-					</sources>
-					<targets>
-						<datapoint pos="0" key="18"/>
-					</targets>
-					<view ltx="490" lty="285" rbx="568" rby="338"/>
-				</component>
-				<!-- concat2: concat1 result + ATCvet code -->
-				<component name="concat" library="core" uid="105021" kind="5" growable="1" growablebasename="value">
-					<sources>
-						<datapoint pos="0" key="19"/>
-						<datapoint pos="1" key="20"/>
-					</sources>
-					<targets>
-						<datapoint pos="0" key="21"/>
-					</targets>
-					<view ltx="614" lty="286" rbx="692" rby="339"/>
-				</component>
-				<!-- Constant: ";" for ATC concat -->
-				<component name="constant" library="core" uid="1116" kind="2">
-					<targets>
-						<datapoint pos="0" key="22"/>
-					</targets>
-					<view ltx="431" lty="310" rbx="476" rby="326"/>
-					<data>
-						<constant value=";" datatype="string"/>
-					</data>
-				</component>
-				<!-- stdAtcCode UDF -->
-				<component name="stdAtcCode" library="user" uid="112030" kind="19" visible="0">
-					<view ltx="782" lty="434" rbx="869" rby="450"/>
-					<data>
-						<root>
-							<header>
-								<namespaces>
-									<namespace/>
-								</namespaces>
-							</header>
-							<entry name="raw" inpkey="23" componentid="112001"/>
-						</root>
-						<root>
-							<header>
-								<namespaces>
-									<namespace/>
-								</namespaces>
-							</header>
-							<entry name="result" outkey="24" componentid="112028"/>
-						</root>
-					</data>
-				</component>
-				<!-- Constant: "Yes" for boolean equal comparisons -->
-				<component name="constant" library="core" uid="1109" kind="2">
-					<targets>
-						<datapoint pos="0" key="25"/>
-					</targets>
-					<view ltx="546" lty="492" rbx="601" rby="508"/>
-					<data>
-						<constant value="Yes" datatype="string"/>
-					</data>
-				</component>
-				<!-- equal: Generic == "Yes" -->
-				<component name="equal" library="core" uid="1108" kind="5">
-					<sources>
-						<datapoint pos="0" key="26"/>
-						<datapoint pos="1" key="27"/>
-					</sources>
-					<targets>
-						<datapoint pos="0" key="28"/>
-					</targets>
-					<view ltx="639" lty="357" rbx="692" rby="408"/>
-				</component>
-				<!-- equal: Biosimilar == "Yes" -->
-				<component name="equal" library="core" uid="112032" kind="5">
-					<sources>
-						<datapoint pos="0" key="29"/>
-						<datapoint pos="1" key="30"/>
-					</sources>
-					<targets>
-						<datapoint pos="0" key="31"/>
-					</targets>
-					<view ltx="746" lty="243" rbx="799" rby="294"/>
-				</component>
-				<!-- equal: Orphan medicine == "Yes" -->
-				<component name="equal" library="core" uid="112034" kind="5">
-					<sources>
-						<datapoint pos="0" key="32"/>
-						<datapoint pos="1" key="33"/>
-					</sources>
-					<targets>
-						<datapoint pos="0" key="34"/>
-					</targets>
-					<view ltx="806" lty="340" rbx="859" rby="391"/>
-				</component>
-				<!-- format-date: DD/MM/YYYY -> YYYY-MM-DD -->
-				<!-- parse-date: parse DD/MM/YYYY string into xs:date -->
-				<component name="parse-date" library="core" uid="112036" kind="5">
-					<sources>
-						<datapoint pos="0" key="35"/>
-						<datapoint pos="1" key="36"/>
-						<datapoint/>
-					</sources>
-					<targets>
-						<datapoint pos="0" key="37"/>
-					</targets>
-					<view ltx="705" lty="104" rbx="798" rby="170"/>
-				</component>
-				<!-- Constant: input date picture [D01]/[M01]/[Y0001] -->
-				<component name="constant" library="core" uid="112037" kind="2">
-					<targets>
-						<datapoint pos="0" key="38"/>
-					</targets>
-					<view ltx="585" lty="2" rbx="709" rby="18"/>
-					<data>
-						<constant value="[D01]/[M01]/[Y0001]" datatype="anySimpleType"/>
-					</data>
-				</component>
-				<!-- EMA CSV source -->
 				<component name="ema_entities" library="text" uid="3" kind="16">
-					<properties/>
-					<view ltx="186" lty="1" rbx="384" rby="501"/>
+					<properties />
+					<view ltx="20" lty="0" rbx="470" rby="700" />
 					<data>
 						<root>
 							<header>
 								<namespaces>
-									<namespace/>
-									<namespace uid="http://www.altova.com/mapforce"/>
+									<namespace />
+									<namespace uid="http://www.altova.com/mapforce" />
 								</namespaces>
 							</header>
 							<entry name="FileInstance" ns="1" expanded="1">
 								<entry name="document" ns="1" expanded="1">
 									<entry name="Rows" outkey="100" expanded="1">
-										<entry name="Category" outkey="101"/>
-										<entry name="Name of medicine" outkey="102"/>
-										<entry name="EMA product number" outkey="103"/>
-										<entry name="Medicine status" outkey="104"/>
-										<entry name="Active substance" outkey="105"/>
-										<entry name="ATC code (human)" outkey="106"/>
-										<entry name="ATCvet code (veterinary)" outkey="107"/>
-										<entry name="Biosimilar" outkey="108"/>
-										<entry name="Generic" outkey="109"/>
-										<entry name="Orphan medicine" outkey="110"/>
-										<entry name="Marketing authorisation developer _ applicant _ holder" outkey="111"/>
-										<entry name="Marketing authorisation date" outkey="112"/>
+										<entry name="Category" outkey="101" />
+										<entry name="Name of medicine" outkey="102" />
+										<entry name="EMA product number" outkey="103" />
+										<entry name="Medicine status" outkey="104" />
+										<entry name="International non-proprietary name (INN) _ common name" outkey="113" />
+										<entry name="Active substance" outkey="105" />
+										<entry name="ATC code (human)" outkey="106" />
+										<entry name="ATCvet code (veterinary)" outkey="107" />
+										<entry name="Biosimilar" outkey="108" />
+										<entry name="Generic" outkey="109" />
+										<entry name="Orphan medicine" outkey="110" />
+										<entry name="Marketing authorisation developer _ applicant _ holder" outkey="111" />
+										<entry name="Marketing authorisation date" outkey="112" />
 									</entry>
 								</entry>
 							</entry>
@@ -261,130 +45,366 @@
 						<text type="csv" encoding="1000" byteorder="1" byteordermark="0" inputinstance="..\..\data\1_raw\02_eu_ema_medicines\ema_medicines.csv">
 							<settings separator="," quote="&quot;" firstrownames="true" removeempty="true">
 								<names root="ema_entities" block="Rows">
-									<field0 name="Category" type="string"/>
-									<field1 name="Name of medicine" type="string"/>
-									<field2 name="EMA product number" type="string"/>
-									<field3 name="Medicine status" type="string"/>
-									<field4 name="Opinion status" type="string"/>
-									<field5 name="Latest procedure affecting product information" type="string"/>
-									<field6 name="International non-proprietary name (INN) _ common name" realname="International non-proprietary name (INN) / common name" type="string"/>
-									<field7 name="Active substance" type="string"/>
-									<field8 name="Column 40" type="string"/>
-									<field9 name="Therapeutic area (MeSH)" type="string"/>
-									<field10 name="Species(veterinary)" realname="Species
-(veterinary)" type="string"/>
-									<field11 name="Patient safety" type="string"/>
-									<field12 name="ATC code (human)" type="string"/>
-									<field13 name="ATCvet code (veterinary)" type="string"/>
-									<field14 name="Pharmacotherapeutic group(human)" realname="Pharmacotherapeutic group
-(human)" type="string"/>
-									<field15 name="Pharmacotherapeutic group(veterinary)" realname="Pharmacotherapeutic group
-(veterinary)" type="string"/>
-									<field16 name="Therapeutic indication" type="string"/>
-									<field17 name="Accelerated assessment" type="string"/>
-									<field18 name="Additional monitoring" type="string"/>
-									<field19 name="Advanced therapy" type="string"/>
-									<field20 name="Biosimilar" type="string"/>
-									<field21 name="Conditional approval" type="string"/>
-									<field22 name="Exceptional circumstances" type="string"/>
-									<field23 name="Generic" type="string"/>
-									<field24 name="Orphan medicine" type="string"/>
-									<field25 name="PRIME_ priority medicine" realname="PRIME: priority medicine" type="string"/>
-									<field26 name="Marketing authorisation developer _ applicant _ holder" realname="Marketing authorisation developer / applicant / holder" type="string"/>
-									<field27 name="European Commission decision date" type="string"/>
-									<field28 name="Start of rolling review date" type="string"/>
-									<field29 name="Start of evaluation date" type="string"/>
-									<field30 name="Opinion adopted date" type="string"/>
-									<field31 name="Withdrawal of application date" type="string"/>
-									<field32 name="Marketing authorisation date" type="string"/>
-									<field33 name="Refusal of marketing authorisation date" type="string"/>
-									<field34 name="Withdrawal _ expiry _ revocation _ lapse of marketing authorisation date" realname="Withdrawal / expiry / revocation / lapse of marketing authorisation date" type="string"/>
-									<field35 name="Suspension of marketing authorisation date" type="string"/>
-									<field36 name="Revision number" type="string"/>
-									<field37 name="First published date" type="string"/>
-									<field38 name="Last updated date" type="string"/>
-									<field39 name="Medicine URL" type="string"/>
+									<field0 name="Category" type="string" />
+									<field1 name="Name of medicine" type="string" />
+									<field2 name="EMA product number" type="string" />
+									<field3 name="Medicine status" type="string" />
+									<field4 name="Opinion status" type="string" />
+									<field5 name="Latest procedure affecting product information" type="string" />
+									<field6 name="International non-proprietary name (INN) _ common name" realname="International non-proprietary name (INN) / common name" type="string" />
+									<field7 name="Active substance" type="string" />
+									<field8 name="Column 40" type="string" />
+									<field9 name="Therapeutic area (MeSH)" type="string" />
+									<field10 name="Species(veterinary)" realname="Species (veterinary)" type="string" />
+									<field11 name="Patient safety" type="string" />
+									<field12 name="ATC code (human)" type="string" />
+									<field13 name="ATCvet code (veterinary)" type="string" />
+									<field14 name="Pharmacotherapeutic group(human)" realname="Pharmacotherapeutic group (human)" type="string" />
+									<field15 name="Pharmacotherapeutic group(veterinary)" realname="Pharmacotherapeutic group (veterinary)" type="string" />
+									<field16 name="Therapeutic indication" type="string" />
+									<field17 name="Accelerated assessment" type="string" />
+									<field18 name="Additional monitoring" type="string" />
+									<field19 name="Advanced therapy" type="string" />
+									<field20 name="Biosimilar" type="string" />
+									<field21 name="Conditional approval" type="string" />
+									<field22 name="Exceptional circumstances" type="string" />
+									<field23 name="Generic" type="string" />
+									<field24 name="Orphan medicine" type="string" />
+									<field25 name="PRIME_ priority medicine" realname="PRIME: priority medicine" type="string" />
+									<field26 name="Marketing authorisation developer _ applicant _ holder" realname="Marketing authorisation developer / applicant / holder" type="string" />
+									<field27 name="European Commission decision date" type="string" />
+									<field28 name="Start of rolling review date" type="string" />
+									<field29 name="Start of evaluation date" type="string" />
+									<field30 name="Opinion adopted date" type="string" />
+									<field31 name="Withdrawal of application date" type="string" />
+									<field32 name="Marketing authorisation date" type="string" />
+									<field33 name="Refusal of marketing authorisation date" type="string" />
+									<field34 name="Withdrawal _ expiry _ revocation _ lapse of marketing authorisation date" realname="Withdrawal / expiry / revocation / lapse of marketing authorisation date" type="string" />
+									<field35 name="Suspension of marketing authorisation date" type="string" />
+									<field36 name="Revision number" type="string" />
+									<field37 name="First published date" type="string" />
+									<field38 name="Last updated date" type="string" />
+									<field39 name="Medicine URL" type="string" />
 								</names>
 							</settings>
 						</text>
 					</data>
 				</component>
-				<!-- Target XML output -->
 				<component name="medicines" library="xml" uid="2" kind="14">
-					<properties XSLTTargetEncoding="UTF-8" XSLTDefaultOutput="1"/>
-					<view ltx="1068" lty="24" rbx="1573" rby="399"/>
+					<properties XSLTTargetEncoding="UTF-8" XSLTDefaultOutput="1" />
+					<view ltx="1170" lty="0" rbx="1650" rby="750" />
 					<data>
 						<root>
 							<header>
 								<namespaces>
-									<namespace/>
-									<namespace uid="http://www.altova.com/mapforce"/>
+									<namespace />
+									<namespace uid="http://www.altova.com/mapforce" />
 								</namespaces>
 							</header>
 							<entry name="FileInstance" ns="1" expanded="1">
 								<entry name="document" ns="1" expanded="1" casttotargettypemode="cast-in-subtree">
 									<entry name="medicines" expanded="1">
 										<entry name="medicine" inpkey="200" expanded="1">
-											<entry name="id" inpkey="201"/>
-											<entry name="source" inpkey="202"/>
-											<entry name="brandName" inpkey="203"/>
+											<entry name="id" inpkey="201" />
+											<entry name="source" inpkey="202" />
+											<entry name="brandName" inpkey="203" />
 											<entry name="activeSubstances" inpkey="204" expanded="1">
-												<entry name="activeSubstance" inpkey="205"/>
+												<entry name="activeSubstance" inpkey="205" />
 											</entry>
-												<entry name="licenceHolder" inpkey="207"/>
-											<entry name="regulatoryStatus" inpkey="208"/>
-											<entry name="productClass" inpkey="209"/>
-											<entry name="atcCode" inpkey="210"/>
-													<entry name="euAuthorisationDate" inpkey="214"/>
+											<entry name="activeSubstanceCount" inpkey="206" />
+											<entry name="licenceHolder" inpkey="207" />
+											<entry name="regulatoryStatus" inpkey="208" />
+											<entry name="productClass" inpkey="209" />
+											<entry name="atcCode" inpkey="210" />
+											<entry name="generic" inpkey="211" />
+											<entry name="biosimilar" inpkey="212" />
+											<entry name="orphanMedicine" inpkey="213" />
+											<entry name="euAuthorisationDate" inpkey="214" />
 										</entry>
 									</entry>
 								</entry>
 							</entry>
 						</root>
-						<document schema="schema\medicines.xsd" instanceroot="{}medicines" outputinstance="schema\medicines.xml"/>
+						<document schema="schema\medicines.xsd" instanceroot="{}medicines" outputinstance="..\..\data\4_translated_mapforce\ema_medicines.xml" />
+					</data>
+				</component>
+				<component name="constant" library="core" uid="3001" kind="2">
+					<view ltx="500" lty="-70" rbx="650" rby="0" />
+					<targets>
+						<datapoint pos="0" key="301" />
+					</targets>
+					<data>
+						<constant value="EMA" datatype="string" />
+					</data>
+				</component>
+				<component name="constant" library="core" uid="3002" kind="2">
+					<view ltx="500" lty="150" rbx="650" rby="220" />
+					<targets>
+						<datapoint pos="0" key="302" />
+					</targets>
+					<data>
+						<constant value=";" datatype="string" />
+					</data>
+				</component>
+				<component name="makeMedicineId" library="user" uid="3003" kind="19" visible="0">
+					<view ltx="650" lty="0" rbx="800" rby="70" />
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="source" componentid="120001" inpkey="303" />
+							<entry name="key" componentid="120002" inpkey="304" />
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="result" componentid="120005" outkey="305" />
+						</root>
+					</data>
+				</component>
+				<component name="getActiveSubstances" library="user" uid="3004" kind="19" visible="0">
+					<view ltx="650" lty="120" rbx="802" rby="190" />
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="primary" componentid="121001" inpkey="306" />
+							<entry name="fallback" componentid="121002" inpkey="307" />
+							<entry name="separator" componentid="121003" inpkey="308" />
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="result" componentid="121013" outkey="309" />
+						</root>
+					</data>
+				</component>
+				<component name="count" library="core" uid="3005" kind="5">
+					<view ltx="900" lty="160" rbx="1050" rby="230" />
+					<sources>
+						<datapoint pos="0" key="310" />
+						<datapoint pos="1" key="311" />
+					</sources>
+					<targets>
+						<datapoint pos="0" key="312" />
+					</targets>
+				</component>
+				<component name="exists" library="core" uid="3006" kind="5">
+					<view ltx="900" lty="260" rbx="1050" rby="330" />
+					<sources>
+						<datapoint pos="0" key="313" />
+					</sources>
+					<targets>
+						<datapoint pos="0" key="314" />
+					</targets>
+				</component>
+				<component name="filter" library="core" uid="3007" kind="3">
+					<view ltx="900" lty="350" rbx="1050" rby="420" />
+					<sources>
+						<datapoint pos="0" key="315" />
+						<datapoint pos="1" key="316" />
+					</sources>
+					<targets>
+						<datapoint pos="0" key="317" />
+						<datapoint />
+					</targets>
+				</component>
+				<component name="standardizeRegulatoryStatus" library="user" uid="3008" kind="19" visible="0">
+					<view ltx="650" lty="430" rbx="866" rby="500" />
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="raw" componentid="125001" inpkey="318" />
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="result" componentid="125003" outkey="319" />
+						</root>
+					</data>
+				</component>
+				<component name="standardizeProductClass" library="user" uid="3009" kind="19" visible="0">
+					<view ltx="650" lty="530" rbx="834" rby="600" />
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="raw" componentid="126001" inpkey="320" />
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="result" componentid="126003" outkey="321" />
+						</root>
+					</data>
+				</component>
+				<component name="standardizeAtcCodes" library="user" uid="3010" kind="19" visible="0">
+					<view ltx="650" lty="630" rbx="802" rby="700" />
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="codes" componentid="127001" inpkey="322" />
+							<entry name="additionalCodes" componentid="127002" inpkey="323" />
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="result" componentid="127006" outkey="324" />
+						</root>
+					</data>
+				</component>
+				<component name="yesNoToBoolean" library="user" uid="3011" kind="19" visible="0">
+					<view ltx="650" lty="740" rbx="800" rby="810" />
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="value" componentid="122001" inpkey="325" />
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="result" componentid="122004" outkey="326" />
+						</root>
+					</data>
+				</component>
+				<component name="yesNoToBoolean" library="user" uid="3012" kind="19" visible="0">
+					<view ltx="650" lty="840" rbx="800" rby="910" />
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="value" componentid="122001" inpkey="327" />
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="result" componentid="122004" outkey="328" />
+						</root>
+					</data>
+				</component>
+				<component name="yesNoToBoolean" library="user" uid="3013" kind="19" visible="0">
+					<view ltx="650" lty="940" rbx="800" rby="1010" />
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="value" componentid="122001" inpkey="329" />
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="result" componentid="122004" outkey="330" />
+						</root>
+					</data>
+				</component>
+				<component name="parseAuthorisationDate" library="user" uid="3014" kind="19" visible="0">
+					<view ltx="650" lty="1040" rbx="826" rby="1110" />
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="value" componentid="123001" inpkey="331" />
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="result" componentid="123004" outkey="332" />
+						</root>
 					</data>
 				</component>
 			</children>
 		</structure>
 		<connections>
-			<!-- Rows -> medicine (repeat) -->
-			<edge from="100" to="200"/>
-			<!-- id: concat("EMA_", EMA product number) -->
-			<edge from="2" to="3"/>
-			<edge from="103" to="4"/>
-			<edge from="5" to="201"/>
-			<!-- source: constant "EMA" -->
-			<edge from="1" to="202"/>
-			<!-- brandName: Name of medicine -->
-			<edge from="102" to="203"/>
-			<!-- activeSubstances wrapper -->
-			<edge from="8" to="204"/>
-			<!-- activeSubstance: tokenize result -->
-			<edge from="8" to="205"/>
-			<!-- tokenize inputs: Active substance + ";" -->
-			<edge from="105" to="6"/>
-			<edge from="9" to="7"/>
-			<!-- activeSubstanceCount omitted: count aggregate requires parent-context wiring not supported in this mapping style -->
-			<!-- licenceHolder -->
-			<edge from="111" to="207"/>
-			<!-- regulatoryStatus: stdRegulatoryStatus(Medicine status) -->
-			<edge from="104" to="12"/>
-			<edge from="13" to="208"/>
-			<!-- productClass: stdProductClass(Category) -->
-			<edge from="101" to="14"/>
-			<edge from="15" to="209"/>
-			<!-- atcCode: stdAtcCode(concat(ATC_human, ";", ATC_vet)) -->
-			<edge from="106" to="16"/>
-			<edge from="22" to="17"/>
-			<edge from="18" to="19"/>
-			<edge from="107" to="20"/>
-			<edge from="21" to="23"/>
-			<edge from="24" to="210"/>
-			<!-- generic/biosimilar/orphanMedicine omitted: equal->xs:boolean causes engine slowdown -->
-			<!-- euAuthorisationDate: format-date(Marketing authorisation date, "[D01]/[M01]/[Y0001]") -->
-			<edge from="112" to="35"/>
-			<edge from="38" to="36"/>
-			<edge from="37" to="214"/>
+			<edge from="301" to="303" />
+			<edge from="103" to="304" />
+			<edge from="305" to="201" />
+			<edge from="301" to="202" />
+			<edge from="105" to="306" />
+			<edge from="113" to="307" />
+			<edge from="302" to="308" />
+			<edge from="309" to="205" />
+			<edge from="100" to="310" />
+			<edge from="309" to="311" />
+			<edge from="312" to="206" />
+			<edge from="309" to="313" />
+			<edge from="100" to="315" />
+			<edge from="314" to="316" />
+			<edge from="317" to="204" />
+			<edge from="317" to="200" />
+			<edge from="102" to="203" />
+			<edge from="111" to="207" />
+			<edge from="104" to="318" />
+			<edge from="319" to="208" />
+			<edge from="101" to="320" />
+			<edge from="321" to="209" />
+			<edge from="106" to="322" />
+			<edge from="107" to="323" />
+			<edge from="324" to="210" />
+			<edge from="109" to="325" />
+			<edge from="326" to="211" />
+			<edge from="108" to="327" />
+			<edge from="328" to="212" />
+			<edge from="110" to="329" />
+			<edge from="330" to="213" />
+			<edge from="112" to="331" />
+			<edge from="332" to="214" />
 		</connections>
 	</component>
 </mapping>

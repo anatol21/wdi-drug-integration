@@ -2,12 +2,30 @@
 
 This directory contains the Phase I data translation assets for integrating pharmaceutical drug data from **Drugs@FDA (US)**, **EMA Medicines (EU)**, and **Health Canada DPD (CA)**.
 
+## Team quick start
+
+1. Clone or pull the complete repository, keeping its folder structure. The DPD and EMA input CSVs are versioned at the paths listed below.
+2. Use Altova MapForce with the **Built-in** execution engine. The current mappings were tested in MapForce 2027; compatibility with older versions has not been verified.
+3. Open [dpd_mapping.mfd](dpd_mapping.mfd) or [ema_mapping.mfd](ema_mapping.mfd). Both mappings already import [wdi_helpers.mfd](helpers/wdi_helpers.mfd) and [wdi_mapping_functions.mfd](helpers/wdi_mapping_functions.mfd). Their functions should load automatically in the Libraries pane; no personal/global library installation or manual rewiring is needed.
+4. Select **Output**, then save the generated XML under `data/4_translated_mapforce/` using the destination below. Run the validator in section 4 afterward.
+
+All paths in this document beginning with `src/` or `data/` are relative to the repository root. Mapping imports, schema references, CSV inputs, and output destinations are relative to each `.mfd` file, so the checkout can live in any directory. Keep the libraries alongside the mappings; do not copy just the main `.mfd` to another location.
+
+| Mapping | Input (repository-relative) | Output (repository-relative) | Verified records |
+| :--- | :--- | :--- | ---: |
+| DPD | `data/2_processed/dpd_entities.csv` | `data/4_translated_mapforce/dpd_medicines.xml` | 41,636 |
+| EMA | `data/1_raw/02_eu_ema_medicines/ema_medicines.csv` | `data/4_translated_mapforce/ema_medicines.xml` | 2,689 |
+
+If functions appear missing, check that both helper files exist and their relative imports resolve before attempting to rewire anything.
+
 ---
 
 ## 1. Directory Structure
 
 ```text
 src/mapforce/
+├── dpd_mapping.mfd             # Complete DPD mapping
+├── ema_mapping.mfd             # Complete EMA mapping with substance fallback
 ├── schema/
 │   ├── medicines.xsd           # Shared target XML Schema (16 attributes + metadata)
 │   ├── medicines.schema.json   # JSON Schema equivalent
@@ -23,13 +41,14 @@ src/mapforce/
 │   ├── route.xml               # Standardized administration routes (Oral, Intravenous, etc.)
 │   └── strength_unit.xml       # Standardized measurement units (mg, mL, %, U/mL, etc.)
 └── helpers/
-    ├── README.md               # Detailed UDF documentation & wiring diagrams
-    ├── wdi_helpers.mfd         # Altova MapForce UDF library for Built-in execution
+    ├── README.md               # UDF reference and usage instructions
     ├── wdi_helpers.mfd         # Altova MapForce UDF library for Built-in execution
     ├── build_helpers_mfd.py    # Generator & simulator for wdi_helpers.mfd
+    ├── wdi_mapping_functions.mfd # Named functions used by the main diagrams
+    ├── build_mapping_functions.py # Generator for the named-function library
     ├── wdi_helpers.xslt        # Reusable XSLT 3.0 / 2.0 helper function library
     ├── udf_reference.py        # Python test oracle & dataset coverage audit
-    └── udf_test_cases.csv      # 107 unit tests covering all functions and edge cases
+    └── udf_test_cases.csv      # 124 unit tests covering all functions and edge cases
 ```
 
 ---
@@ -94,6 +113,9 @@ When consolidating multiple source product or application records into a single 
 ## 3. Mapper Plug-in Specifications
 
 ### A. Drugs@FDA Mapper (`fda_mapping.mfd`)
+
+Specification only: `fda_mapping.mfd` has not been added to this repository yet.
+
 * **Source Tables:**
   * Join `Products.txt` with `Applications.txt` on `ApplNo` (note: 11 product rows have no matching `ApplNo` in `Applications.txt`, and 1 row `ApplNo=221337` `MEDICAL AIR, USP` has an empty `ActiveIngredient`—drop empty `ActiveIngredient` when consolidating entities, just like `entity_count.py`).
   * Join `MarketingStatus.txt` and `MarketingStatus_Lookup.txt` on `MarketingStatusID`.
@@ -114,53 +136,85 @@ When consolidating multiple source product or application records into a single 
   * `usApprovalDate`: Earliest non-empty `substring(SubmissionStatusDate, 1, 10)` where `SubmissionStatus = "AP"` (note: 8 `AP` rows in `Submissions.txt` have an empty `SubmissionStatusDate`).
 
 ### B. Health Canada DPD Mapper (`dpd_mapping.mfd`)
-* **Source Table:** `data/2_processed/dpd_medicines.csv`
-* **Field Connections:**
-  * `id`: `concat("DPD_", medicine_id)`
+
+* **Source Table:** `data/2_processed/dpd_entities.csv` (41,636 normalized medicine entities covering 58,137 products).
+* **Preparation:** `src/data_collection/dpd_extract.ipynb` creates the product and older medicine tables; `src/data_collection/dpd_consolidate.py` consolidates them into `dpd_entities.csv` with IDs matching the entity profiling output.
+* **Extraction Caveat:** The notebook currently imports `medicine_key.py`, which is absent from this checkout. Restore that project module before rerunning extraction; installing a Python package does not replace it. The existing `dpd_entities.csv` can be used directly for mapping without rerunning extraction.
+* **Output:** `data/4_translated_mapforce/dpd_medicines.xml`.
+* **Paths:** The input and output paths in the mapping are relative to `src/mapforce/dpd_mapping.mfd`, so they do not depend on a particular user's checkout location.
+* **Current Status:** All specified DPD fields are wired, including `activeSubstanceCount`, `dosageForm`, `route`, and repeating `strengths`. The substance count uses the source medicine row as its aggregation context. `splitStrengths` supplies tokens, which are filtered through `exists(strengthValue(token))` before creating records; each retained token supplies its own value and unit. A row-level count/filter omits the optional `strengths` wrapper when no supported numeric token exists. The filtering and pairing remain visible in the main diagram rather than being hidden in a structured-output UDF.
+* **Full Export Verified (2026-10-29):** The manual MapForce export passed XSD validation with 41,636 medicines and 41,636 unique IDs, all with source `DPD`. There were no substance-count mismatches or empty strength wrappers. It contained 100,094 strength records, all with values and units, across 41,574 medicines. The refactored export was byte-for-byte identical to the earlier full export. Duplicate comparison exports and temporary test/probe mappings were subsequently removed; the canonical output remains `dpd_medicines.xml`.
+* **Required Field Connections:**
+  * `id`: `makeMedicineId("DPD", medicine_id)`
   * `source`: Constant `"DPD"`
   * `brandName`: `brand_name`
-  * `activeSubstances`: `tokenize(active_substances, ';')`
+  * `activeSubstances`: `getActiveSubstances(active_substances, "", "; ")`
   * `activeSubstanceCount`: `count(activeSubstances)`
   * `licenceHolder`: `licence_holder`
   * `regulatoryStatus`: `bestRegulatoryStatus(current_status)`
   * `productClass`: `stdProductClass(product_class)`
   * `atcCode`: `stdAtcCode(atc_code)`
-  * `biosimilar`: `equal(biosimilar, "Yes")`
+  * `biosimilar`: `yesNoToBoolean(biosimilar)`
   * `dosageForm`: `dosageFormList(dosage_forms)`
   * `route`: `routeList(routes)`
-  * `strengths`: For each token in `tokenize(strengths, ';')`, map `strengthValue` $\rightarrow$ `value` and `strengthUnit` $\rightarrow$ `unit`.
-  * `caStatusDate`: `approval_date`
+  * `strengths`: For each supported token from `splitStrengths(strengths)`, map `strengthValue` $\rightarrow$ `value` and `strengthUnit` $\rightarrow$ `unit`; omit the wrapper when the supported-token count is zero.
+  * `caStatusDate`: `status_date` (latest status date among contributing products with the best regulatory status, not the earliest `approval_date`).
 
 ### C. EMA Medicines Mapper (`ema_mapping.mfd`)
 * **Source Table:** `data/1_raw/02_eu_ema_medicines/ema_medicines.csv`
+* **Output:** `data/4_translated_mapforce/ema_medicines.xml`.
+* **Count and Boolean Flags:** `activeSubstanceCount` is wired with the source `Rows` node as the count's parent context and tokenized active substances as its items. `generic`, `biosimilar`, and `orphanMedicine` use `yesNoToBoolean`, which compares the input with `"Yes"`. The `activeSubstances` wrapper is created once per source row, containing all of that row's substance tokens.
+* **Substance Fallback:** Expose CSV column G (`International non-proprietary name (INN) / common name`) alongside column H (`Active substance`). Apply `normalize-space` and remove empty strings from both values, then use `substitute-missing` to prefer `Active substance` and otherwise use INN/common name. Tokenize the selected value on semicolons for both the substance list and its count. Commas and the word "and" are not separators, so biological preparation descriptions stay intact. This is a general rule, with no medicine-specific overrides or changes to the raw CSV.
+* **Missing Both Fields:** A row filter excludes medicines for which neither field provides a value. For the current 2,746 source rows, 28 are recovered through INN and 57 are excluded, giving 2,689 output medicine records before entity consolidation. The original raw records and IDs remain available for exclusion/fallback review; no extra provenance fields are added to the shared target schema.
+* **Verification (2026-10-29):** Boundary tests checked primary-value precedence, fallback, whitespace-only values, exclusion when both fields are blank, multi-substance counts, and preservation of a comma-containing biological description. The final manual full export, saved as `ema_medicines.xml`, passed XSD validation with exactly the expected 2,689 unique IDs and no unexpected IDs. All 28 fallback records were recovered and 57 blank-substance rows excluded. Every emitted substance list, substance count, and generic/biosimilar/orphan flag matched its source record under the mapping's XML whitespace-normalization rules.
 * **Field Connections:**
-  * `id`: `concat("EMA_", medicine_id)`
+  * `id`: `makeMedicineId("EMA", EMA product number)`
   * `source`: Constant `"EMA"`
   * `brandName`: `Name of medicine`
-  * `activeSubstances`: `tokenize(Active substance, ';')`
+  * `activeSubstances`: `getActiveSubstances(Active substance, INN / common name, ";")`; internally normalizes whitespace, prefers the nonblank primary value, and tokenizes the selected value.
   * `activeSubstanceCount`: `count(activeSubstances)`
   * `licenceHolder`: `Marketing authorisation developer / applicant / holder`
-  * `regulatoryStatus`: `stdRegulatoryStatus(Medicine status)`
-  * `productClass`: `stdProductClass(Category)`
-  * `atcCode`: `stdAtcCode(concat(ATC code (human), ";", ATCvet code (veterinary)))`
-  * `generic`: `equal(Generic, "Yes")`
-  * `biosimilar`: `equal(Biosimilar, "Yes")`
-  * `orphanMedicine`: `equal(Orphan medicine, "Yes")`
-  * `euAuthorisationDate`: Format `Marketing authorisation date` (DD/MM/YYYY) to ISO (YYYY-MM-DD).
+  * `regulatoryStatus`: `standardizeRegulatoryStatus(Medicine status)`
+  * `productClass`: `standardizeProductClass(Category)`
+  * `atcCode`: `standardizeAtcCodes(ATC code (human), ATCvet code (veterinary))`
+  * `generic`: `yesNoToBoolean(Generic)`
+  * `biosimilar`: `yesNoToBoolean(Biosimilar)`
+  * `orphanMedicine`: `yesNoToBoolean(Orphan medicine)`
+  * `euAuthorisationDate`: `parseAuthorisationDate(Marketing authorisation date)` converts DD/MM/YYYY to ISO YYYY-MM-DD.
 
 ---
 
 ## 4. Verification & Validation
 
-To validate generated XML or JSON output files against the target schema:
+Install the dependencies from the repository root using the same Python environment as the project:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+`check_schema.py` is already implemented. It requires `lxml` for XML/XSD validation and `jsonschema` for JSON validation; both are included in `requirements.txt` and imported even when validating only XML.
+
+Use a project virtual environment with a Python version supported by the dependencies. For XML validation alone, install `lxml` and `jsonschema` with `python -m pip install lxml jsonschema`; the full requirements also include notebook and data-preparation tools. Jupyter is optional for mapping existing CSVs and validating exports. Dependency build failures depend on the selected Python version and available wheels; they do not imply that MapForce needs a C++ compiler.
+
+To validate generated XML or JSON output files against the target schema (commands run from the repository root):
 
 ```bash
 # Validate sample instances
 python src/mapforce/schema/check_schema.py
 
-# Validate any MapForce output XML
-python src/mapforce/schema/check_schema.py data/4_translated_mapforce/fda_medicines.xml
+# Validate DPD output after exporting it from MapForce
+python src/mapforce/schema/check_schema.py data/4_translated_mapforce/dpd_medicines.xml
 
-# Run the 92 UDF unit tests and dataset coverage audit
+# Validate EMA output after exporting it from MapForce
+python src/mapforce/schema/check_schema.py data/4_translated_mapforce/ema_medicines.xml
+
+# Run the 124 UDF unit tests and dataset coverage audit
 python src/mapforce/helpers/udf_reference.py
+
+# Run only the helper unit tests
+python src/mapforce/helpers/udf_reference.py --no-coverage
 ```
+
+For Windows PowerShell, use `& .\.venv\Scripts\python.exe` in place of `python` to explicitly select the project's virtual environment.
+
+XML validation checks structure, required elements, unique IDs, controlled values, and data types against `medicines.xsd`. It does not prove that the mapping is complete: substance count, dosage form, route, and strengths are optional in the XSD. Before accepting a final export, also check that it contains 41,636 medicine records with the expected `DPD_` IDs and that the available dosage forms, routes, strengths, and substance counts are preserved. Helper unit tests exercise shared functions; they do not execute the complete DPD mapping in MapForce. MapForce's own mapping validation also does not establish that runtime execution completes successfully.

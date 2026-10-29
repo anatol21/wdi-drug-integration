@@ -1,0 +1,689 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mapping version="35">
+	<settings>
+		<libraries>
+			<import path="wdi_helpers.mfd" saverelative="1" />
+		</libraries>
+	</settings>
+	<resources />
+	<component name="defaultmap" uid="1">
+		<properties SelectedLanguage="builtin" />
+		<structure>
+			<children />
+		</structure>
+		<connections />
+	</component>
+	<component name="makeMedicineId" library="user" uid="1200" inline="1" editable="1" blackbox="0">
+		<description>Prefix the source key with source and an underscore.</description>
+		<properties SelectedLanguage="builtin" />
+		<structure>
+			<children>
+				<component name="source" library="core" uid="120001" kind="6">
+					<view ltx="20" lty="0" rbx="170" rby="70" />
+					<targets>
+						<datapoint pos="0" key="1" />
+					</targets>
+					<data>
+						<input datatype="string" />
+						<parameter usageKind="input" name="source" />
+					</data>
+				</component>
+				<component name="key" library="core" uid="120002" kind="6">
+					<view ltx="20" lty="100" rbx="170" rby="170" />
+					<targets>
+						<datapoint pos="0" key="2" />
+					</targets>
+					<data>
+						<input datatype="string" />
+						<parameter usageKind="input" name="key" />
+					</data>
+				</component>
+				<component name="constant" library="core" uid="120003" kind="2">
+					<view ltx="220" lty="0" rbx="370" rby="70" />
+					<targets>
+						<datapoint pos="0" key="3" />
+					</targets>
+					<data>
+						<constant value="_" datatype="string" />
+					</data>
+				</component>
+				<component name="concat" library="core" uid="120004" kind="5" growable="1" growablebasename="value">
+					<view ltx="420" lty="0" rbx="570" rby="70" />
+					<sources>
+						<datapoint pos="0" key="4" />
+						<datapoint pos="1" key="5" />
+						<datapoint pos="2" key="6" />
+					</sources>
+					<targets>
+						<datapoint pos="0" key="7" />
+					</targets>
+				</component>
+				<component name="result" library="core" uid="120005" kind="7">
+					<view ltx="1200" lty="200" rbx="1350" rby="270" />
+					<sources>
+						<datapoint pos="0" key="8" />
+					</sources>
+					<data>
+						<output datatype="string" />
+						<parameter usageKind="output" name="result" />
+					</data>
+				</component>
+			</children>
+		</structure>
+		<connections>
+			<edge from="1" to="4" />
+			<edge from="3" to="5" />
+			<edge from="2" to="6" />
+			<edge from="7" to="8" />
+		</connections>
+	</component>
+	<component name="getActiveSubstances" library="user" uid="1210" inline="1" editable="1" blackbox="0">
+		<description>Prefer a nonblank primary value, otherwise fallback; split using the source separator.</description>
+		<properties SelectedLanguage="builtin" />
+		<structure>
+			<children>
+				<component name="primary" library="core" uid="121001" kind="6">
+					<view ltx="20" lty="0" rbx="170" rby="70" />
+					<targets>
+						<datapoint pos="0" key="1" />
+					</targets>
+					<data>
+						<input datatype="string" />
+						<parameter usageKind="input" name="primary" optional="1" />
+					</data>
+				</component>
+				<component name="fallback" library="core" uid="121002" kind="6">
+					<view ltx="20" lty="100" rbx="170" rby="170" />
+					<targets>
+						<datapoint pos="0" key="2" />
+					</targets>
+					<data>
+						<input datatype="string" />
+						<parameter usageKind="input" name="fallback" optional="1" />
+					</data>
+				</component>
+				<component name="separator" library="core" uid="121003" kind="6">
+					<view ltx="20" lty="200" rbx="170" rby="270" />
+					<targets>
+						<datapoint pos="0" key="3" />
+					</targets>
+					<data>
+						<input datatype="string" />
+						<parameter usageKind="input" name="separator" />
+					</data>
+				</component>
+				<component name="constant" library="core" uid="121004" kind="2">
+					<view ltx="220" lty="0" rbx="370" rby="70" />
+					<targets>
+						<datapoint pos="0" key="4" />
+					</targets>
+					<data>
+						<constant value="" datatype="string" />
+					</data>
+				</component>
+				<component name="normalize-space" library="core" uid="121005" kind="5">
+					<view ltx="250" lty="0" rbx="400" rby="70" />
+					<sources>
+						<datapoint pos="0" key="5" />
+					</sources>
+					<targets>
+						<datapoint pos="0" key="6" />
+					</targets>
+				</component>
+				<component name="not-equal" library="core" uid="121006" kind="5">
+					<view ltx="450" lty="0" rbx="600" rby="70" />
+					<sources>
+						<datapoint pos="0" key="7" />
+						<datapoint pos="1" key="8" />
+					</sources>
+					<targets>
+						<datapoint pos="0" key="9" />
+					</targets>
+				</component>
+				<component name="filter" library="core" uid="121007" kind="3">
+					<view ltx="650" lty="0" rbx="800" rby="70" />
+					<sources>
+						<datapoint pos="0" key="10" />
+						<datapoint pos="1" key="11" />
+					</sources>
+					<targets>
+						<datapoint pos="0" key="12" />
+						<datapoint />
+					</targets>
+				</component>
+				<component name="normalize-space" library="core" uid="121008" kind="5">
+					<view ltx="250" lty="180" rbx="400" rby="250" />
+					<sources>
+						<datapoint pos="0" key="13" />
+					</sources>
+					<targets>
+						<datapoint pos="0" key="14" />
+					</targets>
+				</component>
+				<component name="not-equal" library="core" uid="121009" kind="5">
+					<view ltx="450" lty="180" rbx="600" rby="250" />
+					<sources>
+						<datapoint pos="0" key="15" />
+						<datapoint pos="1" key="16" />
+					</sources>
+					<targets>
+						<datapoint pos="0" key="17" />
+					</targets>
+				</component>
+				<component name="filter" library="core" uid="121010" kind="3">
+					<view ltx="650" lty="180" rbx="800" rby="250" />
+					<sources>
+						<datapoint pos="0" key="18" />
+						<datapoint pos="1" key="19" />
+					</sources>
+					<targets>
+						<datapoint pos="0" key="20" />
+						<datapoint />
+					</targets>
+				</component>
+				<component name="substitute-missing" library="core" uid="121011" kind="5">
+					<view ltx="850" lty="0" rbx="1000" rby="70" />
+					<sources>
+						<datapoint pos="0" key="21" />
+						<datapoint pos="1" key="22" />
+					</sources>
+					<targets>
+						<datapoint pos="0" key="23" />
+					</targets>
+				</component>
+				<component name="tokenize" library="core" uid="121012" kind="5">
+					<view ltx="1050" lty="0" rbx="1200" rby="70" />
+					<sources>
+						<datapoint pos="0" key="24" />
+						<datapoint pos="1" key="25" />
+					</sources>
+					<targets>
+						<datapoint pos="0" key="26" />
+					</targets>
+				</component>
+				<component name="result" library="core" uid="121013" kind="7">
+					<view ltx="1200" lty="300" rbx="1350" rby="370" />
+					<sources>
+						<datapoint pos="0" key="27" />
+					</sources>
+					<data>
+						<output datatype="string" />
+						<parameter usageKind="output" name="result" sequence="1" />
+					</data>
+				</component>
+			</children>
+		</structure>
+		<connections>
+			<edge from="1" to="5" />
+			<edge from="6" to="7" />
+			<edge from="4" to="8" />
+			<edge from="6" to="10" />
+			<edge from="9" to="11" />
+			<edge from="2" to="13" />
+			<edge from="14" to="15" />
+			<edge from="4" to="16" />
+			<edge from="14" to="18" />
+			<edge from="17" to="19" />
+			<edge from="12" to="21" />
+			<edge from="20" to="22" />
+			<edge from="23" to="24" />
+			<edge from="3" to="25" />
+			<edge from="26" to="27" />
+		</connections>
+	</component>
+	<component name="yesNoToBoolean" library="user" uid="1220" inline="1" editable="1" blackbox="0">
+		<description>Return true for "Yes" and false for any other present value.</description>
+		<properties SelectedLanguage="builtin" />
+		<structure>
+			<children>
+				<component name="value" library="core" uid="122001" kind="6">
+					<view ltx="20" lty="0" rbx="170" rby="70" />
+					<targets>
+						<datapoint pos="0" key="1" />
+					</targets>
+					<data>
+						<input datatype="string" />
+						<parameter usageKind="input" name="value" />
+					</data>
+				</component>
+				<component name="constant" library="core" uid="122002" kind="2">
+					<view ltx="220" lty="0" rbx="370" rby="70" />
+					<targets>
+						<datapoint pos="0" key="2" />
+					</targets>
+					<data>
+						<constant value="Yes" datatype="string" />
+					</data>
+				</component>
+				<component name="equal" library="core" uid="122003" kind="5">
+					<view ltx="420" lty="0" rbx="570" rby="70" />
+					<sources>
+						<datapoint pos="0" key="3" />
+						<datapoint pos="1" key="4" />
+					</sources>
+					<targets>
+						<datapoint pos="0" key="5" />
+					</targets>
+				</component>
+				<component name="result" library="core" uid="122004" kind="7">
+					<view ltx="1200" lty="100" rbx="1350" rby="170" />
+					<sources>
+						<datapoint pos="0" key="6" />
+					</sources>
+					<data>
+						<output datatype="boolean" />
+						<parameter usageKind="output" name="result" />
+					</data>
+				</component>
+			</children>
+		</structure>
+		<connections>
+			<edge from="1" to="3" />
+			<edge from="2" to="4" />
+			<edge from="5" to="6" />
+		</connections>
+	</component>
+	<component name="parseAuthorisationDate" library="user" uid="1230" inline="1" editable="1" blackbox="0">
+		<description>Parse an EMA DD/MM/YYYY date; absent input produces no date.</description>
+		<properties SelectedLanguage="builtin" />
+		<structure>
+			<children>
+				<component name="value" library="core" uid="123001" kind="6">
+					<view ltx="20" lty="0" rbx="170" rby="70" />
+					<targets>
+						<datapoint pos="0" key="1" />
+					</targets>
+					<data>
+						<input datatype="string" />
+						<parameter usageKind="input" name="value" />
+					</data>
+				</component>
+				<component name="constant" library="core" uid="123002" kind="2">
+					<view ltx="220" lty="0" rbx="370" rby="70" />
+					<targets>
+						<datapoint pos="0" key="2" />
+					</targets>
+					<data>
+						<constant value="[D01]/[M01]/[Y0001]" datatype="anySimpleType" />
+					</data>
+				</component>
+				<component name="parse-date" library="core" uid="123003" kind="5">
+					<view ltx="420" lty="0" rbx="570" rby="70" />
+					<sources>
+						<datapoint pos="0" key="3" />
+						<datapoint pos="1" key="4" />
+						<datapoint />
+					</sources>
+					<targets>
+						<datapoint pos="0" key="5" />
+					</targets>
+				</component>
+				<component name="result" library="core" uid="123004" kind="7">
+					<view ltx="1200" lty="100" rbx="1350" rby="170" />
+					<sources>
+						<datapoint pos="0" key="6" />
+					</sources>
+					<data>
+						<output datatype="date" />
+						<parameter usageKind="output" name="result" />
+					</data>
+				</component>
+			</children>
+		</structure>
+		<connections>
+			<edge from="1" to="3" />
+			<edge from="2" to="4" />
+			<edge from="5" to="6" />
+		</connections>
+	</component>
+	<component name="standardizeRegulatoryStatus" library="user" uid="1250" inline="1" editable="1" blackbox="0">
+		<description>Standardize one regulatory status using the shared lookup.</description>
+		<properties SelectedLanguage="builtin" />
+		<structure>
+			<children>
+				<component name="raw" library="core" uid="125001" kind="6">
+					<view ltx="20" lty="0" rbx="170" rby="70" />
+					<targets>
+						<datapoint pos="0" key="1" />
+					</targets>
+					<data>
+						<input datatype="string" />
+						<parameter usageKind="input" name="raw" />
+					</data>
+				</component>
+				<component name="stdRegulatoryStatus" library="user" uid="125002" kind="19" visible="0">
+					<view ltx="420" lty="0" rbx="572" rby="70" />
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="raw" componentid="103001" inpkey="2" />
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="result" componentid="103014" outkey="3" />
+						</root>
+					</data>
+				</component>
+				<component name="result" library="core" uid="125003" kind="7">
+					<view ltx="1200" lty="100" rbx="1350" rby="170" />
+					<sources>
+						<datapoint pos="0" key="4" />
+					</sources>
+					<data>
+						<output datatype="string" />
+						<parameter usageKind="output" name="result" />
+					</data>
+				</component>
+			</children>
+		</structure>
+		<connections>
+			<edge from="1" to="2" />
+			<edge from="3" to="4" />
+		</connections>
+	</component>
+	<component name="standardizeProductClass" library="user" uid="1260" inline="1" editable="1" blackbox="0">
+		<description>Standardize product class using the shared precedence rules.</description>
+		<properties SelectedLanguage="builtin" />
+		<structure>
+			<children>
+				<component name="raw" library="core" uid="126001" kind="6">
+					<view ltx="20" lty="0" rbx="170" rby="70" />
+					<targets>
+						<datapoint pos="0" key="1" />
+					</targets>
+					<data>
+						<input datatype="string" />
+						<parameter usageKind="input" name="raw" />
+					</data>
+				</component>
+				<component name="stdProductClass" library="user" uid="126002" kind="19" visible="0">
+					<view ltx="420" lty="0" rbx="570" rby="70" />
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="raw" componentid="105001" inpkey="2" />
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="result" componentid="105014" outkey="3" />
+						</root>
+					</data>
+				</component>
+				<component name="result" library="core" uid="126003" kind="7">
+					<view ltx="1200" lty="100" rbx="1350" rby="170" />
+					<sources>
+						<datapoint pos="0" key="4" />
+					</sources>
+					<data>
+						<output datatype="string" />
+						<parameter usageKind="output" name="result" />
+					</data>
+				</component>
+			</children>
+		</structure>
+		<connections>
+			<edge from="1" to="2" />
+			<edge from="3" to="4" />
+		</connections>
+	</component>
+	<component name="standardizeDosageForms" library="user" uid="1280" inline="1" editable="1" blackbox="0">
+		<description>Standardize, deduplicate and sort dosage forms.</description>
+		<properties SelectedLanguage="builtin" />
+		<structure>
+			<children>
+				<component name="raw" library="core" uid="128001" kind="6">
+					<view ltx="20" lty="0" rbx="170" rby="70" />
+					<targets>
+						<datapoint pos="0" key="1" />
+					</targets>
+					<data>
+						<input datatype="string" />
+						<parameter usageKind="input" name="raw" />
+					</data>
+				</component>
+				<component name="dosageFormList" library="user" uid="128002" kind="19" visible="0">
+					<view ltx="420" lty="0" rbx="570" rby="70" />
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="raw" componentid="107001" inpkey="2" />
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="result" componentid="107014" outkey="3" />
+						</root>
+					</data>
+				</component>
+				<component name="result" library="core" uid="128003" kind="7">
+					<view ltx="1200" lty="100" rbx="1350" rby="170" />
+					<sources>
+						<datapoint pos="0" key="4" />
+					</sources>
+					<data>
+						<output datatype="string" />
+						<parameter usageKind="output" name="result" />
+					</data>
+				</component>
+			</children>
+		</structure>
+		<connections>
+			<edge from="1" to="2" />
+			<edge from="3" to="4" />
+		</connections>
+	</component>
+	<component name="standardizeRoutes" library="user" uid="1290" inline="1" editable="1" blackbox="0">
+		<description>Standardize, deduplicate and sort administration routes.</description>
+		<properties SelectedLanguage="builtin" />
+		<structure>
+			<children>
+				<component name="raw" library="core" uid="129001" kind="6">
+					<view ltx="20" lty="0" rbx="170" rby="70" />
+					<targets>
+						<datapoint pos="0" key="1" />
+					</targets>
+					<data>
+						<input datatype="string" />
+						<parameter usageKind="input" name="raw" />
+					</data>
+				</component>
+				<component name="routeList" library="user" uid="129002" kind="19" visible="0">
+					<view ltx="420" lty="0" rbx="570" rby="70" />
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="raw" componentid="109001" inpkey="2" />
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="result" componentid="109014" outkey="3" />
+						</root>
+					</data>
+				</component>
+				<component name="result" library="core" uid="129003" kind="7">
+					<view ltx="1200" lty="100" rbx="1350" rby="170" />
+					<sources>
+						<datapoint pos="0" key="4" />
+					</sources>
+					<data>
+						<output datatype="string" />
+						<parameter usageKind="output" name="result" />
+					</data>
+				</component>
+			</children>
+		</structure>
+		<connections>
+			<edge from="1" to="2" />
+			<edge from="3" to="4" />
+		</connections>
+	</component>
+	<component name="standardizeAtcCodes" library="user" uid="1270" inline="1" editable="1" blackbox="0">
+		<description>Combine available human/veterinary code lists and standardize their ATC codes.</description>
+		<properties SelectedLanguage="builtin" />
+		<structure>
+			<children>
+				<component name="codes" library="core" uid="127001" kind="6">
+					<view ltx="20" lty="0" rbx="170" rby="70" />
+					<targets>
+						<datapoint pos="0" key="1" />
+					</targets>
+					<data>
+						<input datatype="string" />
+						<parameter usageKind="input" name="codes" optional="1" />
+					</data>
+				</component>
+				<component name="additionalCodes" library="core" uid="127002" kind="6">
+					<view ltx="20" lty="100" rbx="170" rby="170" />
+					<targets>
+						<datapoint pos="0" key="2" />
+					</targets>
+					<data>
+						<input datatype="string" />
+						<parameter usageKind="input" name="additionalCodes" optional="1" />
+					</data>
+				</component>
+				<component name="constant" library="core" uid="127003" kind="2">
+					<view ltx="220" lty="0" rbx="370" rby="70" />
+					<targets>
+						<datapoint pos="0" key="3" />
+					</targets>
+					<data>
+						<constant value=";" datatype="string" />
+					</data>
+				</component>
+				<component name="concat" library="core" uid="127004" kind="5" growable="1" growablebasename="value">
+					<view ltx="420" lty="0" rbx="570" rby="70" />
+					<sources>
+						<datapoint pos="0" key="4" />
+						<datapoint pos="1" key="5" />
+						<datapoint pos="2" key="6" />
+					</sources>
+					<targets>
+						<datapoint pos="0" key="7" />
+					</targets>
+				</component>
+				<component name="stdAtcCode" library="user" uid="127005" kind="19" visible="0">
+					<view ltx="700" lty="0" rbx="850" rby="70" />
+					<data>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="raw" componentid="112001" inpkey="8" />
+						</root>
+						<root>
+							<header>
+								<namespaces>
+									<namespace />
+								</namespaces>
+							</header>
+							<entry name="result" componentid="112028" outkey="9" />
+						</root>
+					</data>
+				</component>
+				<component name="result" library="core" uid="127006" kind="7">
+					<view ltx="1200" lty="200" rbx="1350" rby="270" />
+					<sources>
+						<datapoint pos="0" key="10" />
+					</sources>
+					<data>
+						<output datatype="string" />
+						<parameter usageKind="output" name="result" />
+					</data>
+				</component>
+			</children>
+		</structure>
+		<connections>
+			<edge from="1" to="4" />
+			<edge from="3" to="5" />
+			<edge from="2" to="6" />
+			<edge from="7" to="8" />
+			<edge from="9" to="10" />
+		</connections>
+	</component>
+	<component name="splitStrengths" library="user" uid="1240" inline="1" editable="1" blackbox="0">
+		<description>Split a DPD strength list into individual tokens; validate each using strengthValue.</description>
+		<properties SelectedLanguage="builtin" />
+		<structure>
+			<children>
+				<component name="values" library="core" uid="124001" kind="6">
+					<view ltx="20" lty="0" rbx="170" rby="70" />
+					<targets>
+						<datapoint pos="0" key="1" />
+					</targets>
+					<data>
+						<input datatype="string" />
+						<parameter usageKind="input" name="values" />
+					</data>
+				</component>
+				<component name="constant" library="core" uid="124002" kind="2">
+					<view ltx="220" lty="0" rbx="370" rby="70" />
+					<targets>
+						<datapoint pos="0" key="2" />
+					</targets>
+					<data>
+						<constant value="; " datatype="string" />
+					</data>
+				</component>
+				<component name="tokenize" library="core" uid="124003" kind="5">
+					<view ltx="300" lty="0" rbx="450" rby="70" />
+					<sources>
+						<datapoint pos="0" key="3" />
+						<datapoint pos="1" key="4" />
+					</sources>
+					<targets>
+						<datapoint pos="0" key="5" />
+					</targets>
+				</component>
+				<component name="result" library="core" uid="124004" kind="7">
+					<view ltx="1200" lty="100" rbx="1350" rby="170" />
+					<sources>
+						<datapoint pos="0" key="6" />
+					</sources>
+					<data>
+						<output datatype="string" />
+						<parameter usageKind="output" name="result" sequence="1" />
+					</data>
+				</component>
+			</children>
+		</structure>
+		<connections>
+			<edge from="1" to="3" />
+			<edge from="2" to="4" />
+			<edge from="5" to="6" />
+		</connections>
+	</component>
+</mapping>
